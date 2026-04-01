@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { encodeConfig, decodeConfig, cn } from './utils';
-import { EventConfig } from './types';
+import type { EventConfig } from './types';
 
 describe('Utility Functions', () => {
   describe('cn()', () => {
@@ -46,7 +46,7 @@ describe('Utility Functions', () => {
 
     it('should return empty string on erroneous encode inputs gracefully depending on JSON structure', () => {
       // Circular reference to trigger error
-      const circularObj: any = {};
+      const circularObj: Record<string, unknown> = {};
       circularObj.circularRef = circularObj;
       const result = encodeConfig(circularObj);
       expect(result).toBe('');

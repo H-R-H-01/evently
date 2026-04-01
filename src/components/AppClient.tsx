@@ -2,11 +2,11 @@
 
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { decodeConfig } from '@/lib/utils';
+import { decodeConfig } from '../lib/utils';
 import EventForm from './EventForm';
 import CountdownView from './CountdownView';
 import { LoadingSpinner } from './LoadingSpinner';
-import { EventConfig } from '@/lib/types';
+import type { EventConfig } from '../lib/types';
 
 export default function AppClient() {
   const searchParams = useSearchParams();

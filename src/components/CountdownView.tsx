@@ -5,7 +5,7 @@ import { differenceInDays, differenceInHours, differenceInMinutes, differenceInS
 import { ArrowLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
-import { EventConfig } from '@/lib/types';
+import type { EventConfig } from '../lib/types';
 
 export default function CountdownView({ config }: { config: EventConfig }) {
   const { eventName, eventDate, additionalInfo, style, userInfo } = config;

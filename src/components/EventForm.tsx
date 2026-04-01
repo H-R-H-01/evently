@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Plus, Trash2, Calendar, Clock, Copy, Check } from 'lucide-react';
-import { encodeConfig } from '@/lib/utils';
+import { encodeConfig } from '../lib/utils';
 import { addDays, format, isAfter, isBefore } from 'date-fns';
 
 export default function EventForm() {

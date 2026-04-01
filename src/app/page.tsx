@@ -1,6 +1,6 @@
 // app/page.tsx
 import { Suspense } from 'react';
-import AppClient from '@/components/AppClient';
+import AppClient from '../components/AppClient';
 
 export default function Home() {
   return (
