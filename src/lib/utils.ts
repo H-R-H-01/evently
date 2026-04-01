@@ -6,19 +6,19 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 // Encode JSON to base64 for URL search params
-export function encodeConfig(data: any): string {
+export function encodeConfig(data: unknown): string {
   try {
     return btoa(encodeURIComponent(JSON.stringify(data)));
-  } catch (e) {
+  } catch {
     return '';
   }
 }
 
 // Decode base64 to JSON from URL search params
-export function decodeConfig(str: string): any {
+export function decodeConfig(str: string): unknown {
   try {
     return JSON.parse(decodeURIComponent(atob(str)));
-  } catch (e) {
+  } catch {
     return null;
   }
 }

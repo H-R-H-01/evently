@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Plus, Trash2, Calendar, Clock, Image as ImageIcon, Link2, Copy, Check } from 'lucide-react';
+import { Plus, Trash2, Calendar, Clock, Copy, Check } from 'lucide-react';
 import { encodeConfig } from '@/lib/utils';
 import { addDays, format, isAfter, isBefore } from 'date-fns';
 

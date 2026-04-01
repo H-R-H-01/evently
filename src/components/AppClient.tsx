@@ -6,26 +6,23 @@ import { decodeConfig } from '@/lib/utils';
 import EventForm from './EventForm';
 import CountdownView from './CountdownView';
 import { LoadingSpinner } from './LoadingSpinner';
+import { EventConfig } from '@/lib/types';
 
 export default function AppClient() {
   const searchParams = useSearchParams();
   const dataQuery = searchParams.get('data');
-  const [config, setConfig] = useState<any>(null);
-  const [isInitializing, setIsInitializing] = useState(true);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    if (dataQuery) {
-      const decoded = decodeConfig(dataQuery);
-      if (decoded) {
-        setConfig(decoded);
-      }
-    }
-    setIsInitializing(false);
-  }, [dataQuery]);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setIsMounted(true);
+  }, []);
 
-  if (isInitializing) {
+  if (!isMounted) {
     return <LoadingSpinner />;
   }
+
+  const config = dataQuery ? (decodeConfig(dataQuery) as EventConfig) : null;
 
   return (
     <>

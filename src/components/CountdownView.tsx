@@ -2,10 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import { differenceInDays, differenceInHours, differenceInMinutes, differenceInSeconds } from 'date-fns';
-import { Share2, ArrowLeft } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Link from 'next/link';
+import { EventConfig } from '@/lib/types';
 
-export default function CountdownView({ config }: { config: any }) {
+export default function CountdownView({ config }: { config: EventConfig }) {
   const { eventName, eventDate, additionalInfo, style, userInfo } = config;
   const targetDate = new Date(eventDate);
   const [now, setNow] = useState(new Date());
@@ -55,16 +57,16 @@ export default function CountdownView({ config }: { config: any }) {
 
         {/* Live Countdown Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-10 mb-20">
-          <TimeUnit value={days} label="Days" color={style.textColor} bgColor={style.bgColor} />
-          <TimeUnit value={hours} label="Hours" color={style.textColor} bgColor={style.bgColor} />
-          <TimeUnit value={minutes} label="Minutes" color={style.textColor} bgColor={style.bgColor} />
-          <TimeUnit value={seconds} label="Seconds" color={style.textColor} bgColor={style.bgColor} />
+          <TimeUnit value={days} label="Days" color={style.textColor} />
+          <TimeUnit value={hours} label="Hours" color={style.textColor} />
+          <TimeUnit value={minutes} label="Minutes" color={style.textColor} />
+          <TimeUnit value={seconds} label="Seconds" color={style.textColor} />
         </div>
 
         {/* Additional Info Cards */}
         {additionalInfo && additionalInfo.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto mt-16">
-            {additionalInfo.map((info: any, idx: number) => (
+            {additionalInfo.map((info, idx: number) => (
               <motion.div 
                 key={idx}
                 initial={{ opacity: 0, y: 10 }}
@@ -92,19 +94,18 @@ export default function CountdownView({ config }: { config: any }) {
 
       </motion.div>
       
-      {/* Create Own Button - discrete */}
-      <a 
+      <Link 
         href="/"
         className="fixed bottom-6 right-6 p-4 rounded-full bg-black/40 border border-white/10 backdrop-blur-md hover:bg-black/60 hover:scale-105 transition-all flex items-center gap-2 group z-50 text-white"
       >
         <ArrowLeft className="w-4 h-4" />
         <span className="text-xs uppercase tracking-widest font-inter opacity-0 w-0 overflow-hidden group-hover:opacity-100 group-hover:w-auto transition-all max-w-[100px]">Create</span>
-      </a>
+      </Link>
     </div>
   );
 }
 
-function TimeUnit({ value, label, color, bgColor }: { value: number, label: string, color: string, bgColor: string }) {
+function TimeUnit({ value, label, color }: { value: number, label: string, color: string }) {
   return (
     <div className="flex flex-col items-center justify-center p-6 shadow-2xl rounded-2xl relative overflow-hidden group">
       {/* Glassy backdrop that adjusts to the requested BG color but stays distinct */}
