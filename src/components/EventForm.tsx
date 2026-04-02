@@ -1,9 +1,99 @@
 'use client';
 
-import { useState } from 'react';
-import { Plus, Trash2, Calendar, Clock, Copy, Check } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Plus, Trash2, Calendar, Clock, Copy, Check, ChevronDown, ChevronUp } from 'lucide-react';
 import { encodeConfig } from '../lib/utils';
 import { addDays, format, isAfter, isBefore } from 'date-fns';
+import { EventConfig, TextStyle } from '../lib/types';
+import CountdownView from './CountdownView';
+
+const FONTS = [
+  { label: 'Playfair Display (Royal)', value: 'var(--font-playfair)' },
+  { label: 'Inter (Modern)', value: 'var(--font-inter)' }
+];
+
+const FONT_SIZES = [
+  { label: 'Extra Small', value: '0.75rem' },
+  { label: 'Small', value: '0.875rem' },
+  { label: 'Base', value: '1rem' },
+  { label: 'Large', value: '1.125rem' },
+  { label: 'Extra Large', value: '1.5rem' },
+  { label: '2XL', value: '2rem' },
+  { label: '4XL', value: '3rem' },
+  { label: '6XL', value: '4rem' },
+  { label: '8XL', value: '6rem' }
+];
+
+const defaultText = (size: string, family: string, color: string, style = 'normal'): TextStyle => ({
+  fontSize: size,
+  fontFamily: family,
+  color,
+  fontStyle: style
+});
+
+const THEMES = {
+  royal_gold: {
+    name: 'Royal Gold',
+    bgColor: '#0a0b10',
+    globalFontFamily: 'var(--font-playfair)',
+    globalTextColor: '#ffd700',
+    textStyles: {
+      title: defaultText('4rem', 'var(--font-playfair)', '#ffd700'),
+      preTitle: defaultText('1rem', 'var(--font-inter)', '#ffffff'),
+      countdownNumbers: defaultText('6rem', 'var(--font-playfair)', '#ffffff'),
+      countdownLabels: defaultText('1rem', 'var(--font-inter)', '#ffffff'),
+      infoHeaders: defaultText('1.5rem', 'var(--font-playfair)', '#ffd700'),
+      infoDescriptions: defaultText('1rem', 'var(--font-inter)', '#ffffff'),
+      hostLabel: defaultText('0.875rem', 'var(--font-inter)', '#ffffff'),
+      hostName: defaultText('1.5rem', 'var(--font-playfair)', '#ffd700'),
+    }
+  },
+  midnight_silver: {
+    name: 'Midnight Silver',
+    bgColor: '#05050a',
+    globalFontFamily: 'var(--font-inter)',
+    globalTextColor: '#e2e8f0',
+    textStyles: {
+      title: defaultText('4rem', 'var(--font-inter)', '#e2e8f0'),
+      preTitle: defaultText('1rem', 'var(--font-inter)', '#94a3b8'),
+      countdownNumbers: defaultText('6rem', 'var(--font-inter)', '#e2e8f0'),
+      countdownLabels: defaultText('1rem', 'var(--font-inter)', '#94a3b8'),
+      infoHeaders: defaultText('1.5rem', 'var(--font-inter)', '#e2e8f0'),
+      infoDescriptions: defaultText('1rem', 'var(--font-inter)', '#94a3b8'),
+      hostLabel: defaultText('0.875rem', 'var(--font-inter)', '#94a3b8'),
+      hostName: defaultText('1.5rem', 'var(--font-inter)', '#e2e8f0'),
+    }
+  },
+  rose_elegance: {
+    name: 'Rose Elegance',
+    bgColor: '#1a1014',
+    globalFontFamily: 'var(--font-playfair)',
+    globalTextColor: '#f4a6b3',
+    textStyles: {
+      title: defaultText('4rem', 'var(--font-playfair)', '#f4a6b3'),
+      preTitle: defaultText('1rem', 'var(--font-inter)', '#fce4e8'),
+      countdownNumbers: defaultText('6rem', 'var(--font-playfair)', '#ffffff'),
+      countdownLabels: defaultText('1rem', 'var(--font-inter)', '#fce4e8'),
+      infoHeaders: defaultText('1.5rem', 'var(--font-playfair)', '#f4a6b3'),
+      infoDescriptions: defaultText('1rem', 'var(--font-inter)', '#fce4e8'),
+      hostLabel: defaultText('0.875rem', 'var(--font-inter)', '#fce4e8'),
+      hostName: defaultText('1.5rem', 'var(--font-playfair)', '#f4a6b3'),
+    }
+  }
+};
+
+type TextKey = keyof EventConfig['style']['textStyles'];
+
+const TEXT_KEYS: { key: TextKey; label: string }[] = [
+  { key: 'title', label: 'Event Title' },
+  { key: 'preTitle', label: 'Pre-Title (Join us for)' },
+  { key: 'countdownNumbers', label: 'Countdown Numbers' },
+  { key: 'countdownLabels', label: 'Countdown Labels' },
+  { key: 'infoHeaders', label: 'Extra Info Headers' },
+  { key: 'infoDescriptions', label: 'Extra Info Descriptions' },
+  { key: 'hostLabel', label: 'Host Label (Hosted by)' },
+  { key: 'hostName', label: 'Host Name' },
+];
 
 export default function EventForm() {
   const [copied, setCopied] = useState(false);
@@ -15,21 +105,28 @@ export default function EventForm() {
   const minDateStr = format(today, "yyyy-MM-dd'T'HH:mm");
   const maxDateStr = format(maxDate, "yyyy-MM-dd'T'HH:mm");
 
-  const [formData, setFormData] = useState({
-    eventName: '',
+  const [formData, setFormData] = useState<EventConfig>({
+    eventName: 'The Royal Wedding',
     eventDate: minDateStr,
     timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-    userInfo: { name: '', email: '', phoneCode: '+1', phone: '' },
-    additionalInfo: [{ header: 'Venue', description: '' }],
+    userInfo: { name: 'Lord Arthur', email: '', phoneCode: '+1', phone: '' },
+    additionalInfo: [{ header: 'Venue', description: 'The Grand Castle' }],
     style: {
-      textColor: '#ffffff',
-      bgColor: '#0a0b10',
-      fontFamily: 'var(--font-playfair)',
-      fontSize: 'text-base'
+      theme: 'royal_gold',
+      ...THEMES['royal_gold']
     }
   });
 
   const [error, setError] = useState('');
+  const [activeAccordion, setActiveAccordion] = useState<string | null>(null);
+
+  // Common styles to update all at once
+  const [commonStyle, setCommonStyle] = useState<TextStyle>({
+    fontSize: '1rem',
+    color: '#ffffff',
+    fontStyle: 'normal',
+    fontFamily: 'var(--font-playfair)'
+  });
 
   const handleAddField = () => {
     setFormData(prev => ({
@@ -49,6 +146,53 @@ export default function EventForm() {
     const newInfo = [...formData.additionalInfo];
     newInfo[index][field] = value;
     setFormData(prev => ({ ...prev, additionalInfo: newInfo }));
+  };
+
+  const applyTheme = (themeKey: keyof typeof THEMES) => {
+    const theme = THEMES[themeKey];
+    setFormData(prev => ({
+      ...prev,
+      style: {
+        ...prev.style,
+        theme: themeKey,
+        bgColor: theme.bgColor,
+        globalFontFamily: theme.globalFontFamily,
+        globalTextColor: theme.globalTextColor,
+        textStyles: JSON.parse(JSON.stringify(theme.textStyles)) // deep copy
+      }
+    }));
+  };
+
+  const updateIndividualTextStyle = (key: TextKey, field: keyof TextStyle, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      style: {
+        ...prev.style,
+        textStyles: {
+          ...prev.style.textStyles,
+          [key]: {
+            ...prev.style.textStyles[key],
+            [field]: value
+          }
+        }
+      }
+    }));
+  };
+
+  const applyCommonStyle = () => {
+    setFormData(prev => {
+      const newTextStyles = { ...prev.style.textStyles };
+      (Object.keys(newTextStyles) as TextKey[]).forEach(key => {
+        newTextStyles[key] = { ...commonStyle };
+      });
+      return {
+        ...prev,
+        style: {
+          ...prev.style,
+          textStyles: newTextStyles
+        }
+      };
+    });
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -85,271 +229,335 @@ export default function EventForm() {
     }
   };
 
-  if (generatedUrl) {
-    return (
-      <div className="w-full max-w-2xl mx-auto glass-panel p-8 sm:p-12 mix-blend-normal rounded-2xl shadow-2xl relative overflow-hidden backdrop-blur-xl border border-[#d4af37]/30">
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#d4af37] via-[#ffd700] to-[#d4af37]" />
-        
-        <div className="text-center mb-8">
-          <div className="w-20 h-20 bg-[#13151f] rounded-full flex items-center justify-center mx-auto mb-6 border border-[#d4af37]/50 shadow-[0_0_30px_rgba(212,175,55,0.2)]">
-            <Check className="w-10 h-10 text-[#ffd700]" />
+  const TextStyleEditor = ({ textStyle, onChange, label }: { textStyle: TextStyle, onChange: (field: keyof TextStyle, val: string) => void, label: string }) => (
+    <div className="space-y-4 p-4 bg-[#13151f] rounded-lg border border-[#1a1d2e]">
+      <h4 className="text-[#d4af37] text-sm tracking-wider uppercase mb-2 font-medium">{label}</h4>
+      <div className="grid grid-cols-2 gap-4">
+        {/* Color */}
+        <div className="space-y-1">
+          <label className="text-xs text-[#94a3b8] uppercase">Color</label>
+          <div className="flex items-center gap-2 border border-[#1a1d2e] bg-[#0a0b10] rounded p-1">
+            <input type="color" 
+              value={textStyle.color}
+              onChange={e => onChange('color', e.target.value)}
+              className="w-6 h-6 rounded shrink-0 cursor-pointer overflow-hidden bg-transparent border-0 p-0"
+            />
+            <span className="text-xs text-[#94a3b8] font-mono">{textStyle.color}</span>
           </div>
-          <h2 className="text-4xl font-playfair text-[#ffd700] mb-4 tracking-wide">Royal Endpoint Created</h2>
-          <p className="text-[#94a3b8] text-lg font-light leading-relaxed">
-            Your majestic countdown is ready to be shared with your guests. Copy the scroll below.
-          </p>
         </div>
-
-        <div className="bg-[#0a0b10]/80 border border-[#1a1d2e] rounded-xl p-6 flex flex-col md:flex-row items-center gap-4 shadow-inner">
-          <input 
-            type="text" 
-            readOnly 
-            value={generatedUrl}
-            className="w-full bg-transparent text-[#f8fafc] font-light outline-none overflow-hidden text-ellipsis selection:bg-[#d4af37]/30"
-          />
-          <button 
-            onClick={handleCopy}
-            className="shrink-0 flex items-center justify-center gap-2 px-6 py-3 bg-[#d4af37] hover:bg-[#ffd700] text-[#0a0b10] font-semibold rounded-lg transition-all active:scale-95 whitespace-nowrap"
+        {/* Font Size */}
+        <div className="space-y-1">
+          <label className="text-xs text-[#94a3b8] uppercase">Size</label>
+          <select 
+            value={textStyle.fontSize}
+            onChange={e => onChange('fontSize', e.target.value)}
+            className="w-full bg-[#0a0b10] border border-[#1a1d2e] rounded p-1.5 text-xs text-[#f8fafc] outline-none"
           >
-            {copied ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
-            {copied ? 'Copied to Scroll' : 'Copy Scroll'}
-          </button>
+            {FONT_SIZES.map(f => (
+              <option key={f.value} value={f.value}>{f.label} ({f.value})</option>
+            ))}
+          </select>
         </div>
-
-        <div className="mt-8 text-center">
-          <button 
-            onClick={() => setGeneratedUrl('')}
-            className="text-[#94a3b8] hover:text-[#d4af37] transition-colors border-b border-transparent hover:border-[#d4af37] pb-1 uppercase tracking-widest text-sm"
+        {/* Font Family */}
+        <div className="space-y-1">
+          <label className="text-xs text-[#94a3b8] uppercase">Family</label>
+          <select 
+            value={textStyle.fontFamily}
+            onChange={e => onChange('fontFamily', e.target.value)}
+            className="w-full bg-[#0a0b10] border border-[#1a1d2e] rounded p-1.5 text-xs text-[#f8fafc] outline-none"
           >
-            Create Another Event
-          </button>
+            {FONTS.map(f => (
+              <option key={f.value} value={f.value}>{f.label}</option>
+            ))}
+          </select>
+        </div>
+        {/* Font Style */}
+        <div className="space-y-1">
+          <label className="text-xs text-[#94a3b8] uppercase">Style</label>
+          <select 
+            value={textStyle.fontStyle}
+            onChange={e => onChange('fontStyle', e.target.value)}
+            className="w-full bg-[#0a0b10] border border-[#1a1d2e] rounded p-1.5 text-xs text-[#f8fafc] outline-none"
+          >
+            <option value="normal">Normal</option>
+            <option value="italic">Italic</option>
+          </select>
         </div>
       </div>
-    );
-  }
+    </div>
+  );
 
   return (
-    <div className="w-full max-w-4xl mx-auto my-12 glass-panel p-6 sm:p-10 rounded-2xl shadow-2xl relative border border-[#d4af37]/20">
-      <div className="text-center mb-10">
-        <h1 className="text-4xl sm:text-5xl font-playfair text-[#ffd700] mb-4 tracking-wider">
-          Proclaim Your Event
-        </h1>
-        <p className="text-[#94a3b8] font-light max-w-xl mx-auto">
-          Craft a majestic countdown for your upcoming momentous occasion. 
-          Fill in the decree below to generate a unique scroll (endpoint).
-        </p>
+    <div className="flex flex-col lg:flex-row min-h-screen bg-[#0a0b10]">
+      {/* LEFT COLUMN: Builder Form */}
+      <div className={`w-full flex-shrink-0 ${generatedUrl ? 'lg:w-full flex flex-col items-center justify-center' : 'lg:w-[45%]'} h-screen overflow-y-auto scrollbar-hide bg-[#0a0b10] border-r border-[#1a1d2e] relative z-20`}>
+        {generatedUrl ? (
+          <div className="w-full max-w-2xl mx-auto glass-panel p-8 sm:p-12 mix-blend-normal rounded-2xl shadow-2xl relative overflow-hidden backdrop-blur-xl border border-[#d4af37]/30 m-6 mt-12 bg-[#0a0b10]">
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#d4af37] via-[#ffd700] to-[#d4af37]" />
+            <div className="text-center mb-8">
+              <div className="w-20 h-20 bg-[#13151f] rounded-full flex items-center justify-center mx-auto mb-6 border border-[#d4af37]/50 shadow-[0_0_30px_rgba(212,175,55,0.2)]">
+                <Check className="w-10 h-10 text-[#ffd700]" />
+              </div>
+              <h2 className="text-4xl font-playfair text-[#ffd700] mb-4 tracking-wide">Royal Endpoint Created</h2>
+              <p className="text-[#94a3b8] text-lg font-light leading-relaxed">
+                Your majestic countdown is ready to be shared.
+              </p>
+            </div>
+            <div className="bg-[#13151f]/80 border border-[#1a1d2e] rounded-xl p-6 flex flex-col md:flex-row items-center gap-4 shadow-inner">
+              <input 
+                type="text" 
+                readOnly 
+                value={generatedUrl}
+                className="w-full bg-transparent text-[#f8fafc] font-light outline-none overflow-hidden text-ellipsis selection:bg-[#d4af37]/30"
+              />
+              <button 
+                onClick={handleCopy}
+                className="shrink-0 flex items-center justify-center gap-2 px-6 py-3 bg-[#d4af37] hover:bg-[#ffd700] text-[#0a0b10] font-semibold rounded-lg transition-all active:scale-95 whitespace-nowrap"
+              >
+                {copied ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
+                {copied ? 'Copied' : 'Copy Link'}
+              </button>
+            </div>
+            <div className="mt-8 text-center">
+              <button 
+                onClick={() => setGeneratedUrl('')}
+                className="text-[#94a3b8] hover:text-[#d4af37] transition-colors border-b border-transparent hover:border-[#d4af37] pb-1 uppercase tracking-widest text-sm"
+              >
+                Return to Editor
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="p-6 sm:p-10 pb-32">
+            <div className="mb-10 block lg:hidden">
+              <h2 className="text-sm font-bold text-[#d4af37] tracking-widest uppercase mb-2">Live Preview Available Below</h2>
+            </div>
+            <div className="text-left mb-10">
+              <h1 className="text-4xl font-playfair text-[#ffd700] mb-2 tracking-wider">
+                Forge Event
+              </h1>
+              <p className="text-[#94a3b8] font-light text-sm">
+                Customize every detail on the left, see it live on the right.
+              </p>
+            </div>
+
+            {error && (
+              <div className="mb-6 p-4 bg-red-900/40 border border-red-500/50 rounded-lg text-red-200 text-center text-sm font-medium">
+                {error}
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit} className="space-y-10">
+              {/* Event Info */}
+              <section className="space-y-4">
+                <h3 className="text-lg font-playfair text-[#f8fafc] border-b border-[#1a1d2e] pb-2">Event Details</h3>
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-xs text-[#94a3b8] uppercase tracking-wider font-medium">Event Name</label>
+                    <input required type="text"
+                      value={formData.eventName}
+                      onChange={e => setFormData(prev => ({ ...prev, eventName: e.target.value }))}
+                      className="w-full bg-[#13151f] border border-[#1a1d2e] rounded-lg p-3 text-[#ffd700] focus:border-[#d4af37] outline-none mt-1"
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-xs text-[#94a3b8] uppercase tracking-wider font-medium flex items-center gap-1"><Calendar className="w-3 h-3"/> Date</label>
+                      <input required type="datetime-local"
+                        min={minDateStr}
+                        max={maxDateStr}
+                        value={formData.eventDate}
+                        onChange={e => setFormData(prev => ({ ...prev, eventDate: e.target.value }))}
+                        className="w-full bg-[#13151f] border border-[#1a1d2e] rounded-lg p-2 text-sm text-[#f8fafc] focus:border-[#d4af37] outline-none mt-1"
+                        style={{ colorScheme: 'dark' }}
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs text-[#94a3b8] uppercase tracking-wider font-medium flex items-center gap-1"><Clock className="w-3 h-3"/> Timezone</label>
+                      <input type="text" readOnly value={formData.timezone}
+                        className="w-full bg-[#0a0b10] border border-[#1a1d2e] rounded-lg p-2 text-sm text-[#94a3b8] mt-1"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              {/* Host Info */}
+              <section className="space-y-4">
+                <h3 className="text-lg font-playfair text-[#f8fafc] border-b border-[#1a1d2e] pb-2">Host Details</h3>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-xs text-[#94a3b8] uppercase tracking-wider font-medium">Name</label>
+                      <input required type="text" value={formData.userInfo.name}
+                        onChange={e => setFormData(prev => ({ ...prev, userInfo: { ...prev.userInfo, name: e.target.value } }))}
+                        className="w-full bg-[#13151f] border border-[#1a1d2e] rounded-lg p-2 text-sm text-[#f8fafc] focus:border-[#d4af37] outline-none mt-1"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs text-[#94a3b8] uppercase tracking-wider font-medium">Email</label>
+                      <input type="email" value={formData.userInfo.email}
+                        onChange={e => setFormData(prev => ({ ...prev, userInfo: { ...prev.userInfo, email: e.target.value } }))}
+                        className="w-full bg-[#13151f] border border-[#1a1d2e] rounded-lg p-2 text-sm text-[#f8fafc] focus:border-[#d4af37] outline-none mt-1"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              {/* Additional Info Section */}
+              <section className="space-y-4">
+                <h3 className="text-lg font-playfair text-[#f8fafc] border-b border-[#1a1d2e] pb-2">Additional Cards</h3>
+                <div className="space-y-3">
+                  {formData.additionalInfo.map((info, index) => (
+                    <div key={index} className="p-3 bg-[#13151f] border border-[#1a1d2e] rounded-lg relative group">
+                      <div className="space-y-2">
+                        <input required type="text" value={info.header} onChange={e => handleInfoChange(index, 'header', e.target.value)}
+                          className="w-full bg-transparent border-b border-[#1a1d2e] p-1 text-[#f8fafc] text-sm focus:border-[#d4af37] outline-none" placeholder="Header"
+                        />
+                        <textarea required value={info.description} onChange={e => handleInfoChange(index, 'description', e.target.value)} rows={2}
+                          className="w-full bg-[#0a0b10] border border-[#1a1d2e] rounded p-2 text-[#f8fafc] text-xs focus:border-[#d4af37] outline-none resize-none" placeholder="Description"
+                        />
+                      </div>
+                      {formData.additionalInfo.length > 1 && (
+                        <button type="button" onClick={() => handleRemoveField(index)}
+                          className="absolute -right-2 -top-2 bg-[#1a1d2e] p-1.5 rounded-full border border-red-500/30 text-red-400 opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500/20"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                  <button type="button" onClick={handleAddField} className="text-xs text-[#d4af37] flex items-center gap-1 hover:underline">
+                    <Plus className="w-3 h-3" /> Add Card
+                  </button>
+                </div>
+              </section>
+
+              {/* Advanced Styling */}
+              <section className="space-y-6">
+                <h3 className="text-lg font-playfair text-[#f8fafc] border-b border-[#1a1d2e] pb-2">Styling & Aesthetics</h3>
+                
+                {/* Themes */}
+                <div className="space-y-2">
+                  <label className="text-xs text-[#94a3b8] uppercase font-bold">Base Theme</label>
+                  <div className="grid grid-cols-2 lg:grid-cols-3 gap-2">
+                    {(Object.entries(THEMES) as [keyof typeof THEMES, any][]).map(([key, theme]) => (
+                      <button
+                        key={key} type="button"
+                        onClick={() => applyTheme(key)}
+                        className={`p-2 rounded border text-xs text-center transition-all ${
+                          formData.style.theme === key 
+                            ? 'border-[#d4af37] bg-[#d4af37]/10 text-[#ffd700]' 
+                            : 'border-[#1a1d2e] bg-[#13151f] text-[#94a3b8] hover:border-[#d4af37]/50'
+                        }`}
+                      >
+                        {theme.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-xs text-[#94a3b8] uppercase font-bold">Background & Global</label>
+                  <div className="flex items-center gap-2 border border-[#1a1d2e] bg-[#13151f] rounded-lg p-2 w-max">
+                    <span className="text-xs text-[#94a3b8]">Background</span>
+                    <input type="color" 
+                      value={formData.style.bgColor}
+                      onChange={e => setFormData(prev => ({ ...prev, style: { ...prev.style, bgColor: e.target.value } }))}
+                      className="w-6 h-6 rounded cursor-pointer bg-transparent border-0 p-0 ml-2"
+                    />
+                  </div>
+                </div>
+
+                {/* Common Text Styles */}
+                <div className="bg-[#13151f] border border-[#1a1d2e] rounded-lg p-4">
+                  <h4 className="text-sm text-[#ffd700] mb-3">Apply Common Text Style</h4>
+                  <p className="text-xs text-[#94a3b8] mb-4">This will override ALL individual text properties below.</p>
+                  <div className="grid grid-cols-2 gap-3 mb-4">
+                    <div>
+                      <label className="text-[10px] text-[#64748b] uppercase">Color</label>
+                      <input type="color" value={commonStyle.color} onChange={e => setCommonStyle(p => ({ ...p, color: e.target.value }))} className="w-full h-8 cursor-pointer rounded" />
+                    </div>
+                    <div>
+                      <label className="text-[10px] text-[#64748b] uppercase">Size (Overrides all)</label>
+                      <select value={commonStyle.fontSize} onChange={e => setCommonStyle(p => ({ ...p, fontSize: e.target.value }))} className="w-full bg-[#0a0b10] border border-[#1a1d2e] rounded p-1.5 text-xs text-white">
+                        {FONT_SIZES.map(f => <option key={f.value} value={f.value}>{f.label}</option>)}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="text-[10px] text-[#64748b] uppercase">Font Family</label>
+                      <select value={commonStyle.fontFamily} onChange={e => setCommonStyle(p => ({ ...p, fontFamily: e.target.value }))} className="w-full bg-[#0a0b10] border border-[#1a1d2e] rounded p-1.5 text-xs text-white">
+                        {FONTS.map(f => <option key={f.value} value={f.value}>{f.label}</option>)}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="text-[10px] text-[#64748b] uppercase">Font Style</label>
+                      <select value={commonStyle.fontStyle} onChange={e => setCommonStyle(p => ({ ...p, fontStyle: e.target.value }))} className="w-full bg-[#0a0b10] border border-[#1a1d2e] rounded p-1.5 text-xs text-white">
+                        <option value="normal">Normal</option>
+                        <option value="italic">Italic</option>
+                      </select>
+                    </div>
+                  </div>
+                  <button type="button" onClick={applyCommonStyle} className="w-full py-2 bg-[#1a1d2e] hover:bg-[#d4af37]/20 border border-[#d4af37]/50 text-[#d4af37] rounded text-xs transition-colors">
+                    Apply to All Texts
+                  </button>
+                </div>
+
+                {/* Individual Text Styles mapped in accordions */}
+                <div className="space-y-2">
+                  <label className="text-xs text-[#94a3b8] uppercase font-bold">Individual Text Elements</label>
+                  {TEXT_KEYS.map(({ key, label }) => (
+                    <div key={key} className="border border-[#1a1d2e] rounded-lg overflow-hidden bg-[#0a0b10]">
+                      <button type="button"
+                        onClick={() => setActiveAccordion(activeAccordion === key ? null : key)}
+                        className="w-full flex justify-between items-center p-3 text-sm text-[#f8fafc] hover:bg-[#13151f] transition-colors"
+                      >
+                        {label}
+                        {activeAccordion === key ? <ChevronUp className="w-4 h-4 text-[#d4af37]" /> : <ChevronDown className="w-4 h-4 text-[#64748b]" />}
+                      </button>
+                      {activeAccordion === key && (
+                        <div className="border-t border-[#1a1d2e]">
+                          <TextStyleEditor 
+                            label={label}
+                            textStyle={formData.style.textStyles[key]} 
+                            onChange={(field, val) => updateIndividualTextStyle(key, field, val)} 
+                          />
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+              </section>
+
+              {/* Fixed Bottom Action */}
+              <div className="fixed bottom-0 left-0 w-full lg:w-[45%] p-4 bg-gradient-to-t from-[#0a0b10] via-[#0a0b10] to-transparent z-10 block pointer-events-none">
+                <button 
+                  type="submit"
+                  className="w-full pointer-events-auto px-6 py-4 bg-gradient-to-r from-[#d4af37] to-[#ffd700] hover:from-[#ffd700] hover:to-[#ffd700] text-[#0a0b10] text-sm font-playfair tracking-widest uppercase font-bold rounded-lg shadow-xl transition-all transform hover:-translate-y-1 active:scale-95 mx-auto block"
+                >
+                  Create Endpoint
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
       </div>
 
-      {error && (
-        <div className="mb-6 p-4 bg-red-900/40 border border-red-500/50 rounded-lg text-red-200 text-center text-sm font-medium">
-          {error}
+      {/* RIGHT COLUMN: Live Preview */}
+      {!generatedUrl && (
+        <div className="w-full lg:flex-1 h-screen overflow-y-auto bg-black relative border-l border-[#1a1d2e]">
+          <div className="absolute top-4 right-4 z-50 bg-black/60 border border-[#1a1d2e] px-4 py-1.5 rounded-full text-xs font-mono text-[#d4af37] backdrop-blur flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+            LIVE PREVIEW
+          </div>
+          {/* Prevent clicks in preview area so it behaves like a view-only canvas */}
+          <div className="pointer-events-none min-h-screen">
+            <CountdownView config={formData} />
+          </div>
         </div>
       )}
-
-      <form onSubmit={handleSubmit} className="space-y-12">
-        {/* User Info Section */}
-        <section className="space-y-6 relative">
-          <div className="flex items-center gap-3 border-b border-[#1a1d2e] pb-3">
-            <h3 className="text-xl font-playfair text-[#f8fafc] tracking-wide">I. Host Information</h3>
-          </div>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <label className="text-sm text-[#94a3b8] uppercase tracking-wider font-medium">Full Name</label>
-              <input required type="text"
-                value={formData.userInfo.name}
-                onChange={e => setFormData(prev => ({ ...prev, userInfo: { ...prev.userInfo, name: e.target.value } }))}
-                className="w-full bg-[#13151f] border border-[#1a1d2e] rounded-lg p-3 text-[#f8fafc] focus:border-[#d4af37] focus:ring-1 focus:ring-[#d4af37] outline-none transition-all placeholder:text-[#475569]"
-                placeholder="Lord / Lady Name"
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm text-[#94a3b8] uppercase tracking-wider font-medium">Email Pigeon</label>
-              <input required type="email"
-                value={formData.userInfo.email}
-                onChange={e => setFormData(prev => ({ ...prev, userInfo: { ...prev.userInfo, email: e.target.value } }))}
-                className="w-full bg-[#13151f] border border-[#1a1d2e] rounded-lg p-3 text-[#f8fafc] focus:border-[#d4af37] outline-none transition-all"
-                placeholder="royalty@kingdom.com"
-              />
-            </div>
-            <div className="space-y-2 sm:col-span-2">
-              <label className="text-sm text-[#94a3b8] uppercase tracking-wider font-medium">Royal Contact Number</label>
-              <div className="flex gap-2">
-                <select 
-                  value={formData.userInfo.phoneCode}
-                  onChange={e => setFormData(prev => ({ ...prev, userInfo: { ...prev.userInfo, phoneCode: e.target.value } }))}
-                  className="w-24 bg-[#13151f] border border-[#1a1d2e] rounded-lg p-3 text-[#f8fafc] focus:border-[#d4af37] outline-none appearance-none"
-                >
-                  <option value="+1">+1 (US)</option>
-                  <option value="+44">+44 (UK)</option>
-                  <option value="+91">+91 (IN)</option>
-                  <option value="+61">+61 (AU)</option>
-                  <option value="+81">+81 (JP)</option>
-                </select>
-                <input required type="tel"
-                  value={formData.userInfo.phone}
-                  onChange={e => setFormData(prev => ({ ...prev, userInfo: { ...prev.userInfo, phone: e.target.value } }))}
-                  className="flex-1 bg-[#13151f] border border-[#1a1d2e] rounded-lg p-3 text-[#f8fafc] focus:border-[#d4af37] outline-none transition-all"
-                  placeholder="234 567 8900"
-                />
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Event Info Section */}
-        <section className="space-y-6">
-          <div className="flex items-center gap-3 border-b border-[#1a1d2e] pb-3">
-            <h3 className="text-xl font-playfair text-[#f8fafc] tracking-wide">II. Event Details</h3>
-          </div>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <div className="space-y-2 sm:col-span-2">
-              <label className="text-sm text-[#94a3b8] uppercase tracking-wider font-medium">What is the occasion?</label>
-              <input required type="text"
-                value={formData.eventName}
-                onChange={e => setFormData(prev => ({ ...prev, eventName: e.target.value }))}
-                className="w-full bg-[#13151f] border border-[#1a1d2e] rounded-lg p-4 text-[#ffd700] text-xl font-playfair focus:border-[#d4af37] focus:ring-1 focus:ring-[#d4af37] outline-none transition-all placeholder:text-[#475569] placeholder:font-sans"
-                placeholder="e.g., The Royal Wedding of Arthur & Guinevere"
-              />
-            </div>
-            <div className="space-y-2 relative">
-              <label className="text-sm text-[#94a3b8] uppercase tracking-wider font-medium flex gap-2 items-center">
-                <Calendar className="w-4 h-4" /> Date & Time
-              </label>
-              <input required type="datetime-local"
-                min={minDateStr}
-                max={maxDateStr}
-                value={formData.eventDate}
-                onChange={e => setFormData(prev => ({ ...prev, eventDate: e.target.value }))}
-                className="w-full bg-[#13151f] border border-[#1a1d2e] rounded-lg p-3 text-[#f8fafc] focus:border-[#d4af37] outline-none block color-scheme-dark"
-                style={{ colorScheme: 'dark' }}
-              />
-              <p className="text-xs text-[#64748b]">Maximum 31 days into the future.</p>
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm text-[#94a3b8] uppercase tracking-wider font-medium flex gap-2 items-center">
-                <Clock className="w-4 h-4" /> Timezone
-              </label>
-              <input type="text" readOnly value={formData.timezone}
-                className="w-full bg-[#0a0b10] border border-[#1a1d2e] rounded-lg p-3 text-[#94a3b8] cursor-not-allowed"
-              />
-            </div>
-          </div>
-        </section>
-
-        {/* Additional Info Section */}
-        <section className="space-y-6">
-          <div className="flex items-center gap-3 border-b border-[#1a1d2e] pb-3">
-            <h3 className="text-xl font-playfair text-[#f8fafc] tracking-wide">III. Additional Decrees</h3>
-          </div>
-          
-          <div className="space-y-4">
-            {formData.additionalInfo.map((info, index) => (
-              <div key={index} className="flex flex-col sm:flex-row gap-4 items-start p-4 bg-[#13151f]/50 border border-[#1a1d2e] rounded-xl relative group">
-                <div className="w-full sm:w-1/3 space-y-2">
-                  <label className="text-xs text-[#94a3b8] uppercase tracking-widest">Header</label>
-                  <input required type="text"
-                    value={info.header}
-                    onChange={e => handleInfoChange(index, 'header', e.target.value)}
-                    className="w-full bg-[#0a0b10] border border-[#1a1d2e] rounded-md p-2 text-[#f8fafc] text-sm focus:border-[#d4af37] outline-none"
-                    placeholder="e.g., Venue"
-                  />
-                </div>
-                <div className="w-full sm:w-2/3 space-y-2">
-                  <label className="text-xs text-[#94a3b8] uppercase tracking-widest">Description</label>
-                  <textarea required
-                    value={info.description}
-                    onChange={e => handleInfoChange(index, 'description', e.target.value)}
-                    rows={2}
-                    className="w-full bg-[#0a0b10] border border-[#1a1d2e] rounded-md p-2 text-[#f8fafc] text-sm focus:border-[#d4af37] outline-none resize-none"
-                    placeholder="Detail the information..."
-                  />
-                </div>
-                {formData.additionalInfo.length > 1 && (
-                  <button type="button" onClick={() => handleRemoveField(index)}
-                    className="absolute -right-2 -top-2 bg-[#1a1d2e] bg-opacity-80 p-1.5 rounded-full border border-[#d4af37]/30 text-red-400 hover:text-red-300 hover:bg-[#1a1d2e] transition-all opacity-0 group-hover:opacity-100"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                )}
-              </div>
-            ))}
-          </div>
-          
-          <button type="button" onClick={handleAddField}
-            className="flex items-center gap-2 text-sm text-[#d4af37] hover:text-[#ffd700] hover:underline transition-all"
-          >
-            <Plus className="w-4 h-4" /> Add Additional Info
-          </button>
-        </section>
-
-        {/* Style Customization Section */}
-        <section className="space-y-6">
-          <div className="flex items-center gap-3 border-b border-[#1a1d2e] pb-3">
-            <h3 className="text-xl font-playfair text-[#f8fafc] tracking-wide">IV. Aesthetic Customizations</h3>
-          </div>
-          
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
-            <div className="space-y-2">
-              <label className="text-sm text-[#94a3b8] uppercase tracking-wider font-medium">Text Color</label>
-              <div className="flex items-center gap-2 border border-[#1a1d2e] bg-[#13151f] rounded-lg p-2">
-                <input type="color" 
-                  value={formData.style.textColor}
-                  onChange={e => setFormData(prev => ({ ...prev, style: { ...prev.style, textColor: e.target.value } }))}
-                  className="w-8 h-8 rounded shrink-0 cursor-pointer overflow-hidden bg-transparent border-0 p-0"
-                />
-                <span className="text-xs text-[#94a3b8] font-mono uppercase">{formData.style.textColor}</span>
-              </div>
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm text-[#94a3b8] uppercase tracking-wider font-medium">BG Color</label>
-              <div className="flex items-center gap-2 border border-[#1a1d2e] bg-[#13151f] rounded-lg p-2">
-                <input type="color" 
-                  value={formData.style.bgColor}
-                  onChange={e => setFormData(prev => ({ ...prev, style: { ...prev.style, bgColor: e.target.value } }))}
-                  className="w-8 h-8 rounded shrink-0 cursor-pointer overflow-hidden bg-transparent border-0 p-0"
-                />
-                <span className="text-xs text-[#94a3b8] font-mono uppercase">{formData.style.bgColor}</span>
-              </div>
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm text-[#94a3b8] uppercase tracking-wider font-medium">Font Family</label>
-              <select 
-                value={formData.style.fontFamily}
-                onChange={e => setFormData(prev => ({ ...prev, style: { ...prev.style, fontFamily: e.target.value } }))}
-                className="w-full bg-[#13151f] border border-[#1a1d2e] rounded-lg p-3.5 text-sm text-[#f8fafc] focus:border-[#d4af37] outline-none"
-              >
-                <option value="var(--font-playfair)">Playfair Display (Royal)</option>
-                <option value="var(--font-inter)">Inter (Modern)</option>
-              </select>
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm text-[#94a3b8] uppercase tracking-wider font-medium">Font Size (Base)</label>
-              <select 
-                value={formData.style.fontSize}
-                onChange={e => setFormData(prev => ({ ...prev, style: { ...prev.style, fontSize: e.target.value } }))}
-                className="w-full bg-[#13151f] border border-[#1a1d2e] rounded-lg p-3.5 text-sm text-[#f8fafc] focus:border-[#d4af37] outline-none"
-              >
-                <option value="text-sm">Small</option>
-                <option value="text-base">Medium</option>
-                <option value="text-lg">Large</option>
-                <option value="text-xl">Grand</option>
-              </select>
-            </div>
-          </div>
-        </section>
-
-        {/* Submit Button */}
-        <div className="pt-6 border-t border-[#1a1d2e]">
-          <button 
-            type="submit"
-            className="w-full md:w-auto px-10 py-4 bg-gradient-to-r from-[#d4af37] to-[#ffd700] hover:from-[#ffd700] hover:to-[#ffd700] text-[#0a0b10] text-lg font-playfair tracking-widest uppercase font-bold rounded-lg shadow-[0_0_20px_rgba(212,175,55,0.3)] transition-all transform hover:-translate-y-1 active:scale-95 mx-auto block"
-          >
-            Forge Endpoint
-          </button>
-        </div>
-      </form>
     </div>
   );
 }

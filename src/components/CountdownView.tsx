@@ -27,14 +27,12 @@ export default function CountdownView({ config }: { config: EventConfig }) {
   const minutes = isPast ? 0 : differenceInMinutes(targetDate, now) % 60;
   const seconds = isPast ? 0 : totalSeconds % 60;
 
+  const { textStyles, bgColor } = style || {};
+
   return (
     <div 
-      className={`min-h-screen w-full flex flex-col items-center justify-center p-6 sm:p-12 relative overflow-hidden ${style.fontSize}`}
-      style={{ 
-        backgroundColor: style.bgColor, 
-        color: style.textColor,
-        fontFamily: style.fontFamily 
-      }}
+      className={`min-h-screen w-full flex flex-col items-center justify-center p-6 sm:p-12 relative overflow-hidden`}
+      style={{ backgroundColor: bgColor || '#0a0b10' }}
     >
       <div className="absolute inset-0 bg-black/10 backdrop-blur-sm -z-10" />
 
@@ -48,19 +46,38 @@ export default function CountdownView({ config }: { config: EventConfig }) {
         className="w-full max-w-5xl mx-auto z-10"
       >
         <div className="text-center mb-16 space-y-4">
-          <p className="tracking-[0.2em] uppercase text-sm sm:text-base opacity-80" style={{ fontFamily: 'var(--font-inter)' }}>Join us for</p>
-          <h1 className="text-5xl sm:text-7xl font-playfair mb-6 tracking-wide drop-shadow-2xl" style={{ textShadow: `0 4px 20px ${style.textColor}40` }}>
+          <p 
+            className="tracking-[0.2em] uppercase opacity-80" 
+            style={{ 
+              color: textStyles?.preTitle?.color, 
+              fontFamily: textStyles?.preTitle?.fontFamily,
+              fontSize: textStyles?.preTitle?.fontSize,
+              fontStyle: textStyles?.preTitle?.fontStyle
+            }}
+          >
+            Join us for
+          </p>
+          <h1 
+            className="mb-6 tracking-wide drop-shadow-2xl" 
+            style={{ 
+              color: textStyles?.title?.color, 
+              fontFamily: textStyles?.title?.fontFamily,
+              fontSize: textStyles?.title?.fontSize,
+              fontStyle: textStyles?.title?.fontStyle,
+              textShadow: `0 4px 20px ${textStyles?.title?.color || '#ffd700'}40` 
+            }}
+          >
             {eventName}
           </h1>
-          <div className="h-px w-32 mx-auto bg-gradient-to-r from-transparent via-current to-transparent opacity-50" />
+          <div className="h-px w-32 mx-auto bg-gradient-to-r from-transparent via-current to-transparent opacity-50" style={{ color: textStyles?.title?.color }} />
         </div>
 
         {/* Live Countdown Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-10 mb-20">
-          <TimeUnit value={days} label="Days" color={style.textColor} />
-          <TimeUnit value={hours} label="Hours" color={style.textColor} />
-          <TimeUnit value={minutes} label="Minutes" color={style.textColor} />
-          <TimeUnit value={seconds} label="Seconds" color={style.textColor} />
+          <TimeUnit value={days} label="Days" numberStyle={textStyles?.countdownNumbers} labelStyle={textStyles?.countdownLabels} />
+          <TimeUnit value={hours} label="Hours" numberStyle={textStyles?.countdownNumbers} labelStyle={textStyles?.countdownLabels} />
+          <TimeUnit value={minutes} label="Minutes" numberStyle={textStyles?.countdownNumbers} labelStyle={textStyles?.countdownLabels} />
+          <TimeUnit value={seconds} label="Seconds" numberStyle={textStyles?.countdownNumbers} labelStyle={textStyles?.countdownLabels} />
         </div>
 
         {/* Additional Info Cards */}
@@ -72,13 +89,30 @@ export default function CountdownView({ config }: { config: EventConfig }) {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 + idx * 0.1 }}
-                className="p-8 border border-white/10 rounded-2xl bg-white/5 backdrop-blur-md shadow-xl"
-                style={{ borderColor: `${style.textColor}20` }}
+                className="p-8 border rounded-2xl bg-white/5 backdrop-blur-md shadow-xl"
+                style={{ borderColor: `${textStyles?.infoHeaders?.color || '#ffffff'}20` }}
               >
-                <h3 className="text-2xl font-playfair tracking-wider mb-4 border-b pb-4 opacity-90" style={{ borderColor: `${style.textColor}20` }}>
+                <h3 
+                  className="tracking-wider mb-4 border-b pb-4 opacity-90" 
+                  style={{ 
+                    color: textStyles?.infoHeaders?.color, 
+                    fontFamily: textStyles?.infoHeaders?.fontFamily,
+                    fontSize: textStyles?.infoHeaders?.fontSize,
+                    fontStyle: textStyles?.infoHeaders?.fontStyle,
+                    borderColor: `${textStyles?.infoHeaders?.color}20` 
+                  }}
+                >
                   {info.header}
                 </h3>
-                <p className="font-light leading-relaxed opacity-80" style={{ fontFamily: 'var(--font-inter)' }}>
+                <p 
+                  className="leading-relaxed opacity-80 whitespace-pre-wrap" 
+                  style={{ 
+                    color: textStyles?.infoDescriptions?.color, 
+                    fontFamily: textStyles?.infoDescriptions?.fontFamily,
+                    fontSize: textStyles?.infoDescriptions?.fontSize,
+                    fontStyle: textStyles?.infoDescriptions?.fontStyle
+                  }}
+                >
                   {info.description}
                 </p>
               </motion.div>
@@ -88,8 +122,27 @@ export default function CountdownView({ config }: { config: EventConfig }) {
 
         {/* Host Info */}
         <div className="mt-20 text-center opacity-70">
-          <p className="text-sm tracking-widest uppercase mb-2" style={{ fontFamily: 'var(--font-inter)' }}>Hosted by</p>
-          <p className="text-2xl font-playfair">{userInfo.name}</p>
+          <p 
+            className="tracking-widest uppercase mb-2" 
+            style={{ 
+              color: textStyles?.hostLabel?.color, 
+              fontFamily: textStyles?.hostLabel?.fontFamily,
+              fontSize: textStyles?.hostLabel?.fontSize,
+              fontStyle: textStyles?.hostLabel?.fontStyle
+            }}
+          >
+            Hosted by
+          </p>
+          <p 
+            style={{ 
+              color: textStyles?.hostName?.color, 
+              fontFamily: textStyles?.hostName?.fontFamily,
+              fontSize: textStyles?.hostName?.fontSize,
+              fontStyle: textStyles?.hostName?.fontStyle
+            }}
+          >
+            {userInfo.name}
+          </p>
         </div>
 
       </motion.div>
@@ -105,11 +158,11 @@ export default function CountdownView({ config }: { config: EventConfig }) {
   );
 }
 
-function TimeUnit({ value, label, color }: { value: number, label: string, color: string }) {
+function TimeUnit({ value, label, numberStyle, labelStyle }: { value: number, label: string, numberStyle?: any, labelStyle?: any }) {
   return (
     <div className="flex flex-col items-center justify-center p-6 shadow-2xl rounded-2xl relative overflow-hidden group">
       {/* Glassy backdrop that adjusts to the requested BG color but stays distinct */}
-      <div className="absolute inset-0 opacity-10" style={{ backgroundColor: color }} />
+      <div className="absolute inset-0 opacity-10" style={{ backgroundColor: numberStyle?.color || '#ffffff' }} />
       <div className="absolute inset-0 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl transition-all" />
       
       <div className="relative z-10 flex flex-col items-center">
@@ -120,12 +173,26 @@ function TimeUnit({ value, label, color }: { value: number, label: string, color
             animate={{ y: 0, opacity: 1, scale: 1 }}
             exit={{ y: -20, opacity: 0, scale: 0.8 }}
             transition={{ type: "spring", stiffness: 200, damping: 20 }}
-            className="text-6xl sm:text-8xl font-playfair font-bold tabular-nums tracking-tighter"
+            className="font-bold tabular-nums tracking-tighter"
+            style={{ 
+              color: numberStyle?.color, 
+              fontFamily: numberStyle?.fontFamily,
+              fontSize: numberStyle?.fontSize || '4rem',
+              fontStyle: numberStyle?.fontStyle
+            }}
           >
             {value.toString().padStart(2, '0')}
           </motion.span>
         </AnimatePresence>
-        <span className="text-sm sm:text-base tracking-[0.3em] uppercase mt-4 opacity-70 font-light" style={{ fontFamily: 'var(--font-inter)' }}>
+        <span 
+          className="tracking-[0.3em] uppercase mt-4 opacity-70 font-light" 
+          style={{ 
+            color: labelStyle?.color, 
+            fontFamily: labelStyle?.fontFamily,
+            fontSize: labelStyle?.fontSize || '1rem',
+            fontStyle: labelStyle?.fontStyle
+          }}
+        >
           {label}
         </span>
       </div>

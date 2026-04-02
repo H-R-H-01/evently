@@ -26,10 +26,20 @@ describe('Utility Functions', () => {
           { header: 'Venue', description: 'The Grand Hall' }
         ],
         style: {
-          textColor: '#ffd700',
+          theme: 'royal_gold',
           bgColor: '#0a0b10',
-          fontFamily: 'var(--font-playfair)',
-          fontSize: 'text-xl'
+          globalFontFamily: 'var(--font-playfair)',
+          globalTextColor: '#ffd700',
+          textStyles: {
+            title: { color: '#ffd700', fontFamily: 'var(--font-playfair)', fontSize: '4rem', fontStyle: 'normal' },
+            preTitle: { color: '#ffffff', fontFamily: 'var(--font-inter)', fontSize: '1rem', fontStyle: 'normal' },
+            countdownNumbers: { color: '#ffffff', fontFamily: 'var(--font-playfair)', fontSize: '6rem', fontStyle: 'normal' },
+            countdownLabels: { color: '#ffffff', fontFamily: 'var(--font-inter)', fontSize: '1rem', fontStyle: 'normal' },
+            infoHeaders: { color: '#ffd700', fontFamily: 'var(--font-playfair)', fontSize: '1.5rem', fontStyle: 'normal' },
+            infoDescriptions: { color: '#ffffff', fontFamily: 'var(--font-inter)', fontSize: '1rem', fontStyle: 'normal' },
+            hostLabel: { color: '#ffffff', fontFamily: 'var(--font-inter)', fontSize: '0.875rem', fontStyle: 'normal' },
+            hostName: { color: '#ffd700', fontFamily: 'var(--font-playfair)', fontSize: '1.5rem', fontStyle: 'normal' }
+          }
         }
       };
 

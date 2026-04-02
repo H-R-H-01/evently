@@ -1,3 +1,10 @@
+export interface TextStyle {
+  fontSize: string;
+  color: string;
+  fontStyle: string; // normal, italic
+  fontFamily: string;
+}
+
 export interface EventConfig {
   eventName: string;
   eventDate: string;
@@ -13,9 +20,19 @@ export interface EventConfig {
     description: string;
   }[];
   style: {
-    textColor: string;
+    theme?: string;
     bgColor: string;
-    fontFamily: string;
-    fontSize: string;
+    globalFontFamily: string; // common fallback or selector
+    globalTextColor: string; // common fallback or selector
+    textStyles: {
+      title: TextStyle;
+      preTitle: TextStyle;
+      countdownNumbers: TextStyle;
+      countdownLabels: TextStyle;
+      infoHeaders: TextStyle;
+      infoDescriptions: TextStyle;
+      hostLabel: TextStyle;
+      hostName: TextStyle;
+    };
   };
 }
