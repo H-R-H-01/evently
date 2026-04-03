@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { Plus, Trash2, Calendar, Clock, Copy, Check, ChevronDown, ChevronUp } from 'lucide-react';
 import { encodeConfig } from '../lib/utils';
 import { addDays, format, isAfter, isBefore } from 'date-fns';
-import { EventConfig, TextStyle } from '../lib/types';
+import { EventConfig, TextStyle, BoxStyle } from '../lib/types';
 import CountdownView from './CountdownView';
 
 const FONTS = [
@@ -31,6 +31,14 @@ const defaultText = (size: string, family: string, color: string, style = 'norma
   fontStyle: style
 });
 
+const defaultBox = (bg: string, bgOp: number, border: string, borderOp: number, enabled = true): BoxStyle => ({
+  enabled,
+  backgroundColor: bg,
+  backgroundOpacity: bgOp,
+  borderColor: border,
+  borderOpacity: borderOp
+});
+
 const THEMES = {
   royal_gold: {
     name: 'Royal Gold',
@@ -46,6 +54,10 @@ const THEMES = {
       infoDescriptions: defaultText('1rem', 'var(--font-inter)', '#ffffff'),
       hostLabel: defaultText('0.875rem', 'var(--font-inter)', '#ffffff'),
       hostName: defaultText('1.5rem', 'var(--font-playfair)', '#ffd700'),
+    },
+    boxStyles: {
+      countdown: defaultBox('#ffffff', 5, '#ffffff', 10),
+      additionalInfo: defaultBox('#ffffff', 5, '#ffd700', 20)
     }
   },
   midnight_silver: {
@@ -62,6 +74,10 @@ const THEMES = {
       infoDescriptions: defaultText('1rem', 'var(--font-inter)', '#94a3b8'),
       hostLabel: defaultText('0.875rem', 'var(--font-inter)', '#94a3b8'),
       hostName: defaultText('1.5rem', 'var(--font-inter)', '#e2e8f0'),
+    },
+    boxStyles: {
+      countdown: defaultBox('#ffffff', 2, '#ffffff', 5),
+      additionalInfo: defaultBox('#ffffff', 2, '#e2e8f0', 10)
     }
   },
   rose_elegance: {
@@ -78,6 +94,70 @@ const THEMES = {
       infoDescriptions: defaultText('1rem', 'var(--font-inter)', '#fce4e8'),
       hostLabel: defaultText('0.875rem', 'var(--font-inter)', '#fce4e8'),
       hostName: defaultText('1.5rem', 'var(--font-playfair)', '#f4a6b3'),
+    },
+    boxStyles: {
+      countdown: defaultBox('#f4a6b3', 5, '#f4a6b3', 15),
+      additionalInfo: defaultBox('#f4a6b3', 5, '#f4a6b3', 20)
+    }
+  },
+  ocean_depth: {
+    name: 'Ocean Depth',
+    bgColor: '#001a33',
+    globalFontFamily: 'var(--font-inter)',
+    globalTextColor: '#4db8ff',
+    textStyles: {
+      title: defaultText('4rem', 'var(--font-playfair)', '#4db8ff'),
+      preTitle: defaultText('1rem', 'var(--font-inter)', '#e6f2ff'),
+      countdownNumbers: defaultText('6rem', 'var(--font-inter)', '#ffffff'),
+      countdownLabels: defaultText('1rem', 'var(--font-inter)', '#99ccff'),
+      infoHeaders: defaultText('1.5rem', 'var(--font-playfair)', '#4db8ff'),
+      infoDescriptions: defaultText('1rem', 'var(--font-inter)', '#e6f2ff'),
+      hostLabel: defaultText('0.875rem', 'var(--font-inter)', '#99ccff'),
+      hostName: defaultText('1.5rem', 'var(--font-playfair)', '#ffffff'),
+    },
+    boxStyles: {
+      countdown: defaultBox('#0066cc', 10, '#4db8ff', 30),
+      additionalInfo: defaultBox('#0066cc', 10, '#4db8ff', 20)
+    }
+  },
+  neon_cyber: {
+    name: 'Neon Cyber',
+    bgColor: '#0c001a',
+    globalFontFamily: 'var(--font-inter)',
+    globalTextColor: '#ff00ff',
+    textStyles: {
+      title: defaultText('4rem', 'var(--font-inter)', '#ff00ff', 'italic'),
+      preTitle: defaultText('1rem', 'var(--font-inter)', '#cc99ff'),
+      countdownNumbers: defaultText('6rem', 'var(--font-inter)', '#00ffff'),
+      countdownLabels: defaultText('1rem', 'var(--font-inter)', '#cc99ff'),
+      infoHeaders: defaultText('1.5rem', 'var(--font-inter)', '#ff00ff'),
+      infoDescriptions: defaultText('1rem', 'var(--font-inter)', '#cc99ff'),
+      hostLabel: defaultText('0.875rem', 'var(--font-inter)', '#cc99ff'),
+      hostName: defaultText('1.5rem', 'var(--font-inter)', '#00ffff'),
+    },
+    boxStyles: {
+      countdown: defaultBox('#ff00ff', 5, '#00ffff', 40),
+      additionalInfo: defaultBox('#ff00ff', 5, '#ff00ff', 40)
+    }
+  },
+  emerald_forest: {
+    name: 'Emerald Forest',
+    bgColor: '#051a05',
+    globalFontFamily: 'var(--font-playfair)',
+    globalTextColor: '#66ff66',
+    textStyles: {
+      title: defaultText('4rem', 'var(--font-playfair)', '#66ff66'),
+      preTitle: defaultText('1rem', 'var(--font-inter)', '#e6ffe6'),
+      countdownNumbers: defaultText('6rem', 'var(--font-playfair)', '#ffffff'),
+      countdownLabels: defaultText('1rem', 'var(--font-inter)', '#b3ffb3'),
+      infoHeaders: defaultText('1.5rem', 'var(--font-playfair)', '#66ff66'),
+      infoDescriptions: defaultText('1rem', 'var(--font-inter)', '#e6ffe6'),
+      hostLabel: defaultText('0.875rem', 'var(--font-inter)', '#b3ffb3'),
+      hostName: defaultText('1.5rem', 'var(--font-playfair)', '#ffffff'),
+    },
+    boxStyles: {
+      countdown: defaultBox('#00ff00', 5, '#66ff66', 20),
+      additionalInfo: defaultBox('#00ff00', 5, '#66ff66', 30)
     }
   }
 };
@@ -113,7 +193,7 @@ export default function EventForm() {
     additionalInfo: [{ header: 'Venue', description: 'The Grand Castle' }],
     style: {
       theme: 'royal_gold',
-      ...THEMES['royal_gold']
+      ...JSON.parse(JSON.stringify(THEMES['royal_gold']))
     }
   });
 
@@ -158,7 +238,8 @@ export default function EventForm() {
         bgColor: theme.bgColor,
         globalFontFamily: theme.globalFontFamily,
         globalTextColor: theme.globalTextColor,
-        textStyles: JSON.parse(JSON.stringify(theme.textStyles)) // deep copy
+        textStyles: JSON.parse(JSON.stringify(theme.textStyles)), // deep copy
+        boxStyles: JSON.parse(JSON.stringify(theme.boxStyles)) // deep copy
       }
     }));
   };
@@ -527,6 +608,55 @@ export default function EventForm() {
                       )}
                     </div>
                   ))}
+                </div>
+
+                {/* Box Styles */}
+                <div className="space-y-2 pt-4 border-t border-[#1a1d2e]">
+                  <label className="text-xs text-[#94a3b8] uppercase font-bold">Container Box Controls</label>
+                  {['countdown', 'additionalInfo'].map((boxKey) => {
+                    const bKey = boxKey as keyof NonNullable<EventConfig['style']['boxStyles']>;
+                    const boxProps = formData.style.boxStyles?.[bKey] || defaultBox('#ffffff', 5, '#ffffff', 10);
+                    
+                    return (
+                      <div key={bKey} className="border border-[#1a1d2e] rounded-lg overflow-hidden bg-[#0a0b10] p-3 space-y-3">
+                        <div className="flex items-center justify-between border-b border-[#1a1d2e] pb-2">
+                          <span className="text-sm font-playfair text-[#ffd700] tracking-wider">{bKey === 'countdown' ? 'Countdown Container' : 'Card Container'}</span>
+                          <label className="flex items-center gap-2 cursor-pointer text-xs text-[#94a3b8] hover:text-white transition-colors">
+                            Enabled
+                            <input type="checkbox" checked={boxProps.enabled} onChange={e => {
+                               setFormData(prev => ({ ...prev, style: { ...prev.style, boxStyles: { ...prev.style.boxStyles, [bKey]: { ...boxProps, enabled: e.target.checked } } as any } }));
+                            }} className="accent-[#d4af37] w-4 h-4 cursor-pointer" />
+                          </label>
+                        </div>
+                        {boxProps.enabled && (
+                          <div className="grid grid-cols-2 gap-4 pt-1">
+                            <div className="space-y-1">
+                              <label className="text-[10px] text-[#94a3b8] uppercase">BG Color</label>
+                              <div className="flex items-center gap-2 border border-[#1a1d2e] bg-[#13151f] rounded p-1">
+                                <input type="color" value={boxProps.backgroundColor} onChange={e => setFormData(prev => ({ ...prev, style: { ...prev.style, boxStyles: { ...prev.style.boxStyles, [bKey]: { ...boxProps, backgroundColor: e.target.value } } as any } }))} className="w-6 h-6 rounded cursor-pointer border-0 p-0 bg-transparent" />
+                                <span className="text-xs text-[#94a3b8] font-mono uppercase">{boxProps.backgroundColor}</span>
+                              </div>
+                            </div>
+                            <div className="space-y-1">
+                              <label className="text-[10px] text-[#94a3b8] uppercase flex justify-between">BG Opacity <span>{boxProps.backgroundOpacity}%</span></label>
+                              <input type="range" min="0" max="100" value={boxProps.backgroundOpacity} onChange={e => setFormData(prev => ({ ...prev, style: { ...prev.style, boxStyles: { ...prev.style.boxStyles, [bKey]: { ...boxProps, backgroundOpacity: parseInt(e.target.value) } } as any } }))} className="w-full accent-[#d4af37]" />
+                            </div>
+                            <div className="space-y-1">
+                              <label className="text-[10px] text-[#94a3b8] uppercase">Border Color</label>
+                              <div className="flex items-center gap-2 border border-[#1a1d2e] bg-[#13151f] rounded p-1">
+                                <input type="color" value={boxProps.borderColor} onChange={e => setFormData(prev => ({ ...prev, style: { ...prev.style, boxStyles: { ...prev.style.boxStyles, [bKey]: { ...boxProps, borderColor: e.target.value } } as any } }))} className="w-6 h-6 rounded cursor-pointer border-0 p-0 bg-transparent" />
+                                <span className="text-xs text-[#94a3b8] font-mono uppercase">{boxProps.borderColor}</span>
+                              </div>
+                            </div>
+                            <div className="space-y-1">
+                              <label className="text-[10px] text-[#94a3b8] uppercase flex justify-between">Border Opacity <span>{boxProps.borderOpacity}%</span></label>
+                              <input type="range" min="0" max="100" value={boxProps.borderOpacity} onChange={e => setFormData(prev => ({ ...prev, style: { ...prev.style, boxStyles: { ...prev.style.boxStyles, [bKey]: { ...boxProps, borderOpacity: parseInt(e.target.value) } } as any } }))} className="w-full accent-[#d4af37]" />
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })}
                 </div>
 
               </section>

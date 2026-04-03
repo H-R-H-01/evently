@@ -5,6 +5,14 @@ export interface TextStyle {
   fontFamily: string;
 }
 
+export interface BoxStyle {
+  enabled: boolean;
+  backgroundColor: string;
+  backgroundOpacity: number;
+  borderColor: string;
+  borderOpacity: number;
+}
+
 export interface EventConfig {
   eventName: string;
   eventDate: string;
@@ -33,6 +41,10 @@ export interface EventConfig {
       infoDescriptions: TextStyle;
       hostLabel: TextStyle;
       hostName: TextStyle;
+    };
+    boxStyles?: {
+      countdown: BoxStyle;
+      additionalInfo: BoxStyle;
     };
   };
 }

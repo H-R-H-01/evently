@@ -5,7 +5,18 @@ import { differenceInDays, differenceInHours, differenceInMinutes, differenceInS
 import { ArrowLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
-import type { EventConfig } from '../lib/types';
+import type { EventConfig, BoxStyle } from '../lib/types';
+
+function hexToRgba(hex: string, opacity: number) {
+  if (!hex) return 'transparent';
+  let h = hex.replace('#', '');
+  if (h.length === 3) h = h.split('').map(x => x + x).join('');
+  const r = parseInt(h.substring(0, 2), 16);
+  const g = parseInt(h.substring(2, 4), 16);
+  const b = parseInt(h.substring(4, 6), 16);
+  if (isNaN(r) || isNaN(g) || isNaN(b)) return 'transparent';
+  return `rgba(${r}, ${g}, ${b}, ${opacity / 100})`;
+}
 
 export default function CountdownView({ config }: { config: EventConfig }) {
   const { eventName, eventDate, additionalInfo, style, userInfo } = config;
@@ -27,7 +38,18 @@ export default function CountdownView({ config }: { config: EventConfig }) {
   const minutes = isPast ? 0 : differenceInMinutes(targetDate, now) % 60;
   const seconds = isPast ? 0 : totalSeconds % 60;
 
-  const { textStyles, bgColor } = style || {};
+  const { textStyles, bgColor, boxStyles } = style || {};
+
+  const defaultBoxStyle = {
+    enabled: true,
+    backgroundColor: '#ffffff',
+    backgroundOpacity: 5,
+    borderColor: '#ffffff',
+    borderOpacity: 10
+  };
+
+  const cdBox = boxStyles?.countdown || defaultBoxStyle;
+  const infoBox = boxStyles?.additionalInfo || defaultBoxStyle;
 
   return (
     <div 
@@ -74,32 +96,35 @@ export default function CountdownView({ config }: { config: EventConfig }) {
 
         {/* Live Countdown Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-10 mb-20">
-          <TimeUnit value={days} label="Days" numberStyle={textStyles?.countdownNumbers} labelStyle={textStyles?.countdownLabels} />
-          <TimeUnit value={hours} label="Hours" numberStyle={textStyles?.countdownNumbers} labelStyle={textStyles?.countdownLabels} />
-          <TimeUnit value={minutes} label="Minutes" numberStyle={textStyles?.countdownNumbers} labelStyle={textStyles?.countdownLabels} />
-          <TimeUnit value={seconds} label="Seconds" numberStyle={textStyles?.countdownNumbers} labelStyle={textStyles?.countdownLabels} />
+          <TimeUnit value={days} label="Days" numberStyle={textStyles?.countdownNumbers} labelStyle={textStyles?.countdownLabels} boxStyle={cdBox} />
+          <TimeUnit value={hours} label="Hours" numberStyle={textStyles?.countdownNumbers} labelStyle={textStyles?.countdownLabels} boxStyle={cdBox} />
+          <TimeUnit value={minutes} label="Minutes" numberStyle={textStyles?.countdownNumbers} labelStyle={textStyles?.countdownLabels} boxStyle={cdBox} />
+          <TimeUnit value={seconds} label="Seconds" numberStyle={textStyles?.countdownNumbers} labelStyle={textStyles?.countdownLabels} boxStyle={cdBox} />
         </div>
 
         {/* Additional Info Cards */}
         {additionalInfo && additionalInfo.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto mt-16">
             {additionalInfo.map((info, idx: number) => (
-              <motion.div 
+               <motion.div 
                 key={idx}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 + idx * 0.1 }}
-                className="p-8 border rounded-2xl bg-white/5 backdrop-blur-md shadow-xl"
-                style={{ borderColor: `${textStyles?.infoHeaders?.color || '#ffffff'}20` }}
+                className={`p-8 rounded-2xl ${infoBox.enabled ? 'shadow-xl backdrop-blur-md' : ''}`}
+                style={{ 
+                  backgroundColor: infoBox.enabled ? hexToRgba(infoBox.backgroundColor, infoBox.backgroundOpacity) : 'transparent',
+                  border: infoBox.enabled ? `1px solid ${hexToRgba(infoBox.borderColor, infoBox.borderOpacity)}` : 'none',
+                }}
               >
                 <h3 
-                  className="tracking-wider mb-4 border-b pb-4 opacity-90" 
+                  className={`tracking-wider mb-4 pb-4 opacity-90 ${infoBox.enabled ? 'border-b' : ''}`}
                   style={{ 
                     color: textStyles?.infoHeaders?.color, 
                     fontFamily: textStyles?.infoHeaders?.fontFamily,
                     fontSize: textStyles?.infoHeaders?.fontSize,
                     fontStyle: textStyles?.infoHeaders?.fontStyle,
-                    borderColor: `${textStyles?.infoHeaders?.color}20` 
+                    borderColor: infoBox.enabled ? hexToRgba(infoBox.borderColor, infoBox.borderOpacity) : 'transparent' 
                   }}
                 >
                   {info.header}
@@ -158,12 +183,17 @@ export default function CountdownView({ config }: { config: EventConfig }) {
   );
 }
 
-function TimeUnit({ value, label, numberStyle, labelStyle }: { value: number, label: string, numberStyle?: any, labelStyle?: any }) {
+function TimeUnit({ value, label, numberStyle, labelStyle, boxStyle }: { value: number, label: string, numberStyle?: any, labelStyle?: any, boxStyle?: BoxStyle }) {
+  const box = boxStyle || { enabled: true, backgroundColor: '#ffffff', backgroundOpacity: 5, borderColor: '#ffffff', borderOpacity: 10 };
+
   return (
-    <div className="flex flex-col items-center justify-center p-6 shadow-2xl rounded-2xl relative overflow-hidden group">
-      {/* Glassy backdrop that adjusts to the requested BG color but stays distinct */}
-      <div className="absolute inset-0 opacity-10" style={{ backgroundColor: numberStyle?.color || '#ffffff' }} />
-      <div className="absolute inset-0 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl transition-all" />
+    <div className={`flex flex-col items-center justify-center p-6 rounded-2xl relative overflow-hidden group ${box.enabled ? 'shadow-2xl' : ''}`}>
+      {box.enabled && (
+        <>
+          <div className="absolute inset-0" style={{ backgroundColor: hexToRgba(box.backgroundColor, box.backgroundOpacity) }} />
+          <div className="absolute inset-0 backdrop-blur-xl rounded-2xl transition-all" style={{ border: `1px solid ${hexToRgba(box.borderColor, box.borderOpacity)}` }} />
+        </>
+      )}
       
       <div className="relative z-10 flex flex-col items-center">
         <AnimatePresence mode="popLayout">
