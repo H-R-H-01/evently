@@ -1,3 +1,7 @@
+export interface BaseConfig {
+  type?: 'countdown' | 'invitation';
+}
+
 export interface TextStyle {
   fontSize: string;
   color: string;
@@ -13,7 +17,8 @@ export interface BoxStyle {
   borderOpacity: number;
 }
 
-export interface EventConfig {
+export interface EventConfig extends BaseConfig {
+  type?: 'countdown';
   eventName: string;
   eventDate: string;
   timezone: string;
@@ -30,8 +35,8 @@ export interface EventConfig {
   style: {
     theme?: string;
     bgColor: string;
-    globalFontFamily: string; // common fallback or selector
-    globalTextColor: string; // common fallback or selector
+    globalFontFamily: string;
+    globalTextColor: string;
     textStyles: {
       title: TextStyle;
       preTitle: TextStyle;
@@ -48,3 +53,22 @@ export interface EventConfig {
     };
   };
 }
+
+export interface InvitationConfig extends BaseConfig {
+  type: 'invitation';
+  eventType: 'marriage' | 'birthday' | 'custom';
+  title: string;
+  primaryName: string;
+  secondaryName?: string;
+  date: string;
+  imageUrl: string; 
+  themeId: string;
+  imageStyle?: {
+    showBorder: boolean;
+    borderColor: string;
+    paddingX: number;
+    paddingY: number;
+  };
+}
+
+export type AnyConfig = EventConfig | InvitationConfig;

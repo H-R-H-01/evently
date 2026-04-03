@@ -175,7 +175,7 @@ const TEXT_KEYS: { key: TextKey; label: string }[] = [
   { key: 'hostName', label: 'Host Name' },
 ];
 
-export default function EventForm() {
+export default function EventForm({ onBack }: { onBack?: () => void }) {
   const [copied, setCopied] = useState(false);
   const [generatedUrl, setGeneratedUrl] = useState('');
   
@@ -414,6 +414,15 @@ export default function EventForm() {
               <h2 className="text-sm font-bold text-[#d4af37] tracking-widest uppercase mb-2">Live Preview Available Below</h2>
             </div>
             <div className="text-left mb-10">
+              {onBack && (
+                <button 
+                  type="button" 
+                  onClick={onBack}
+                  className="flex items-center gap-2 mb-6 text-[#94a3b8] hover:text-[#d4af37] transition-all text-sm tracking-widest uppercase font-bold"
+                >
+                  <ChevronDown className="w-4 h-4 rotate-90" /> Return to Hub
+                </button>
+              )}
               <h1 className="text-4xl font-playfair text-[#ffd700] mb-2 tracking-wider">
                 Forge Event
               </h1>

@@ -5,16 +5,19 @@ import { useEffect, useState } from 'react';
 import { decodeConfig } from '../lib/utils';
 import EventForm from './EventForm';
 import CountdownView from './CountdownView';
+import HomeTiles from './HomeTiles';
+import InvitationBuilder from './InvitationBuilder';
+import InvitationView from './InvitationView';
 import { LoadingSpinner } from './LoadingSpinner';
-import type { EventConfig } from '../lib/types';
+import type { AnyConfig, EventConfig, InvitationConfig } from '../lib/types';
 
 export default function AppClient() {
   const searchParams = useSearchParams();
   const dataQuery = searchParams.get('data');
   const [isMounted, setIsMounted] = useState(false);
+  const [activeBuilder, setActiveBuilder] = useState<'home' | 'countdown' | 'invitation'>('home');
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsMounted(true);
   }, []);
 
@@ -22,15 +25,23 @@ export default function AppClient() {
     return <LoadingSpinner />;
   }
 
-  const config = dataQuery ? (decodeConfig(dataQuery) as EventConfig) : null;
+  const config = dataQuery ? (decodeConfig(dataQuery) as AnyConfig) : null;
 
-  return (
-    <>
-      {config ? (
-        <CountdownView config={config} />
-      ) : (
-        <EventForm />
-      )}
-    </>
-  );
+  if (config) {
+    if (config.type === 'invitation') {
+      return <InvitationView config={config as InvitationConfig} />;
+    } else {
+      return <CountdownView config={config as EventConfig} />;
+    }
+  }
+
+  if (activeBuilder === 'countdown') {
+    return <EventForm onBack={() => setActiveBuilder('home')} />;
+  }
+
+  if (activeBuilder === 'invitation') {
+    return <InvitationBuilder onBack={() => setActiveBuilder('home')} />;
+  }
+
+  return <HomeTiles onSelect={setActiveBuilder} />;
 }
