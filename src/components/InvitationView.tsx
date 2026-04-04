@@ -121,14 +121,6 @@ export default function InvitationView({ config }: { config: InvitationConfig })
           <h1 className="text-5xl md:text-8xl font-playfair mb-8 leading-tight">
             {config.title}
           </h1>
-          <motion.div 
-            animate={{ y: [0, 15, 0] }}
-            transition={{ repeat: Infinity, duration: 2 }}
-            className="mt-12 flex flex-col items-center gap-2 text-[#94a3b8]"
-          >
-            <span className="text-xs uppercase tracking-widest">Scroll to Begin</span>
-            <div className="w-px h-12 bg-gradient-to-b from-[#4db8ff] to-transparent" />
-          </motion.div>
         </motion.div>
       </section>
 
