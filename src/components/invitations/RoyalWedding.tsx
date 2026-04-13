@@ -120,10 +120,6 @@ export default function RoyalWedding({ config }: { config: InvitationConfig }) {
                 </div>
               </div>
             </div>
-
-            <button className="mt-8 bg-[#1a1a1a] text-[#c5a059] px-10 py-4 hover:bg-[#c5a059] hover:text-[#1a1a1a] border border-[#c5a059] transition-all duration-300 font-sans tracking-widest uppercase text-sm">
-              Confirm Your Presence
-            </button>
           </motion.div>
         </div>
       </section>
