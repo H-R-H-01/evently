@@ -4,7 +4,7 @@ import AppClient from '../components/AppClient';
 
 export default function Home() {
   return (
-    <main className="min-h-screen relative flex items-center justify-center p-4 sm:p-8">
+    <main className="min-h-screen relative">
       {/* Royal Background Elements */}
       <div className="absolute inset-0 bg-[#0a0b10] -z-20" />
       <div 
@@ -15,7 +15,7 @@ export default function Home() {
       />
       <div className="absolute inset-0 bg-radial-gradient from-transparent via-[#0a0b10]/80 to-[#0a0b10] -z-10" />
 
-      <Suspense fallback={<div className="text-[#d4af37] font-playfair animate-pulse">Loading Evently...</div>}>
+      <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-[#d4af37] font-playfair animate-pulse">Loading Evently...</div>}>
         <AppClient />
       </Suspense>
     </main>
