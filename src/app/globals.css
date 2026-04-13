@@ -8,6 +8,13 @@
   --color-royal-900: #0a0b10;
   --color-royal-800: #13151f;
   --color-royal-700: #1a1d2e;
+
+  --color-royal-gold: #c5a059;
+  --color-royal-dark: #1a1a1a;
+  --color-royal-cream: #fdfcf6;
+
+  --font-playfair: var(--font-playfair), serif;
+  --font-inter: var(--font-inter), sans-serif;
 }
 
 @layer base {

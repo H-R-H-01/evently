@@ -1,13 +1,14 @@
 'use client';
 
 import { useState } from 'react';
-import { ChevronDown, Check, Copy, ArrowRight, Image as ImageIcon } from 'lucide-react';
+import { ChevronDown, Check, Copy, ArrowRight, Image as ImageIcon, Sparkles } from 'lucide-react';
 import { encodeConfig, transformGDriveLink } from '../lib/utils';
 import { format, addDays } from 'date-fns';
 import InvitationView from './InvitationView';
 import type { InvitationConfig } from '../lib/types';
 
 const THEMES = [
+  { id: 'royal_wedding', label: 'Royal Wedding (Elegant & Traditional)' },
   { id: 'romantic_clouds', label: 'Romantic Clouds (Floating Elements)' },
   { id: 'golden_starfall', label: 'Golden Starfall (Space Parallax)' },
   { id: 'simple', label: 'Simple - No Effects' }
@@ -25,14 +26,31 @@ export default function InvitationBuilder({ onBack }: { onBack?: () => void }) {
     type: 'invitation',
     eventType: 'marriage',
     title: 'You are joyfully invited to celebrate the union of',
-    primaryName: 'Romeo',
-    secondaryName: 'Juliet',
+    primaryName: 'Julian',
+    secondaryName: 'Isabella',
     date: defaultDateStr,
     imageUrl: 'https://images.unsplash.com/photo-1519741497674-611481863552?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-    themeId: 'romantic_clouds',
+    heroImageUrl: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+    newsImageUrl: 'https://images.unsplash.com/photo-1519741497674-611481863552?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+    themeId: 'royal_wedding',
+    location: 'The Gilded Palace',
+    venue: '123 Serenity Drive, Royal Estates',
+    message: 'Together with our families, we invite you to witness a promise of a lifetime. Join us as we celebrate the union of two souls in a setting fit for royalty.',
+    news: [
+      {
+        date: "April 10, 2026",
+        title: "The Venue Finalized",
+        description: "We are thrilled to announce that the Gilded Palace will host our special day. The ballroom is currently being prepared with custom floral designs."
+      },
+      {
+        date: "May 15, 2026",
+        title: "Menu Selection",
+        description: "A five-course royal banquet has been curated by Chef Alessandro. Featuring local seasonal delicacies and vintage champagne."
+      }
+    ],
     imageStyle: {
       showBorder: true,
-      borderColor: '#4db8ff',
+      borderColor: '#c5a059',
       paddingX: 20,
       paddingY: 20
     }
@@ -184,6 +202,73 @@ export default function InvitationBuilder({ onBack }: { onBack?: () => void }) {
                   <label className="text-[10px] text-[#94a3b8] uppercase tracking-wider">Date & Time</label>
                   <input required type="datetime-local" value={formData.date} onChange={e => setFormData(p => ({ ...p, date: e.target.value }))} className="w-full bg-[#13151f] border border-[#1a1d2e] rounded-md p-2.5 text-sm text-[#f8fafc] focus:border-[#4db8ff] outline-none" style={{ colorScheme: 'dark' }} />
                 </div>
+
+                {formData.themeId === 'royal_wedding' && (
+                  <div className="space-y-4 pt-4 border-t border-[#1a1d2e] animate-in fade-in slide-in-from-top-2 duration-300">
+                    <h3 className="text-sm font-bold text-[#c5a059] border-b border-[#c5a059]/30 pb-2 flex items-center gap-2">
+                      <Sparkles className="w-4 h-4" /> Royal Specific Settings
+                    </h3>
+                    
+                    <div className="space-y-3">
+                      <div className="space-y-1">
+                        <label className="text-[10px] text-[#94a3b8] uppercase tracking-wider">Location / Venue Name</label>
+                        <input type="text" value={formData.location || ''} onChange={e => setFormData(p => ({ ...p, location: e.target.value }))} placeholder="e.g. The Gilded Palace" className="w-full bg-[#13151f] border border-[#1a1d2e] rounded-md p-2.5 text-sm text-[#f8fafc] focus:border-[#c5a059] outline-none" />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[10px] text-[#94a3b8] uppercase tracking-wider">Full Address</label>
+                        <input type="text" value={formData.venue || ''} onChange={e => setFormData(p => ({ ...p, venue: e.target.value }))} placeholder="123 Serenity Drive..." className="w-full bg-[#13151f] border border-[#1a1d2e] rounded-md p-2.5 text-sm text-[#f8fafc] focus:border-[#c5a059] outline-none" />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[10px] text-[#94a3b8] uppercase tracking-wider">Personal Message</label>
+                        <textarea value={formData.message || ''} onChange={e => setFormData(p => ({ ...p, message: e.target.value }))} rows={3} className="w-full bg-[#13151f] border border-[#1a1d2e] rounded-md p-2.5 text-sm text-[#f8fafc] focus:border-[#c5a059] outline-none resize-none" />
+                      </div>
+                    </div>
+
+                    <div className="space-y-3 pt-2">
+                       <label className="text-[10px] text-[#94a3b8] uppercase tracking-wider">Hero Background Image</label>
+                       <input type="url" value={formData.heroImageUrl || ''} onChange={e => setFormData(p => ({ ...p, heroImageUrl: transformGDriveLink(e.target.value) }))} placeholder="Hero background URL..." className="w-full bg-[#13151f] border border-[#1a1d2e] rounded-md p-2.5 text-sm text-[#f8fafc] focus:border-[#c5a059] outline-none" />
+                    </div>
+
+                    <div className="space-y-3">
+                       <label className="text-[10px] text-[#94a3b8] uppercase tracking-wider">News Section Image</label>
+                       <input type="url" value={formData.newsImageUrl || ''} onChange={e => setFormData(p => ({ ...p, newsImageUrl: transformGDriveLink(e.target.value) }))} placeholder="Timeline section image URL..." className="w-full bg-[#13151f] border border-[#1a1d2e] rounded-md p-2.5 text-sm text-[#f8fafc] focus:border-[#c5a059] outline-none" />
+                    </div>
+
+                    <div className="space-y-3 pt-2">
+                       <label className="text-[10px] text-[#94a3b8] uppercase tracking-wider">Wedding News / Timeline</label>
+                       {(formData.news || []).map((item, idx) => (
+                         <div key={idx} className="p-3 bg-[#0a0b10] border border-[#1a1d2e] rounded-md space-y-2">
+                            <input type="text" value={item.date} onChange={e => {
+                              const newNews = [...(formData.news || [])];
+                              newNews[idx].date = e.target.value;
+                              setFormData(p => ({ ...p, news: newNews }));
+                            }} placeholder="Date" className="w-full bg-transparent border-b border-[#1a1d2e] text-xs text-[#c5a059] outline-none pb-1" />
+                            <input type="text" value={item.title} onChange={e => {
+                              const newNews = [...(formData.news || [])];
+                              newNews[idx].title = e.target.value;
+                              setFormData(p => ({ ...p, news: newNews }));
+                            }} placeholder="Title" className="w-full bg-transparent border-b border-[#1a1d2e] text-sm text-[#f8fafc] outline-none pb-1" />
+                            <textarea value={item.description} onChange={e => {
+                              const newNews = [...(formData.news || [])];
+                              newNews[idx].description = e.target.value;
+                              setFormData(p => ({ ...p, news: newNews }));
+                            }} placeholder="Description" rows={2} className="w-full bg-transparent text-xs text-[#94a3b8] outline-none resize-none" />
+                            <button type="button" onClick={() => {
+                              const newNews = (formData.news || []).filter((_, i) => i !== idx);
+                              setFormData(p => ({ ...p, news: newNews }));
+                            }} className="text-[10px] text-red-500/50 hover:text-red-500 transition-colors uppercase tracking-widest pt-1">
+                              Remove
+                            </button>
+                         </div>
+                       ))}
+                       <button type="button" onClick={() => {
+                         setFormData(p => ({ ...p, news: [...(p.news || []), { date: '', title: '', description: '' }] }));
+                       }} className="w-full p-2 border border-dashed border-[#1a1d2e] rounded-md text-[10px] text-[#94a3b8] hover:text-[#c5a059] hover:border-[#c5a059] transition-colors">
+                         + Add Milestone
+                       </button>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Photo Styling */}

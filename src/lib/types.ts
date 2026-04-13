@@ -63,6 +63,16 @@ export interface InvitationConfig extends BaseConfig {
   date: string;
   imageUrl: string; 
   themeId: string;
+  location?: string;
+  venue?: string;
+  message?: string;
+  news?: {
+    date: string;
+    title: string;
+    description: string;
+  }[];
+  heroImageUrl?: string;
+  newsImageUrl?: string;
   imageStyle?: {
     showBorder: boolean;
     borderColor: string;
