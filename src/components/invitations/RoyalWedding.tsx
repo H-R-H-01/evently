@@ -14,12 +14,14 @@ export default function RoyalWedding({ config }: { config: InvitationConfig }) {
   return (
     <div className="min-h-screen bg-[#fdfcf6] text-[#2d2a26] font-sans selection:bg-[#c5a059]/30 overflow-x-hidden">
       {/* Hero Section */}
-      <section className="relative h-screen w-full overflow-hidden flex items-center justify-center">
-        <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-[10000ms] scale-110"
-          style={{ backgroundImage: `url('${transformGDriveLink(config.heroImageUrl || defaultHero)}')` }}
-        />
-        <div className="absolute inset-0 bg-black/40" />
+      <section className="relative h-screen w-full flex items-center justify-center [clip-path:inset(0_0_0_0)]">
+        <div className="fixed inset-0 pointer-events-none">
+          <div 
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-[10000ms] scale-110"
+            style={{ backgroundImage: `url('${transformGDriveLink(config.heroImageUrl || defaultHero)}')` }}
+          />
+          <div className="absolute inset-0 bg-black/40" />
+        </div>
         
         <div className="relative z-10 text-center text-white px-4">
           <motion.div
