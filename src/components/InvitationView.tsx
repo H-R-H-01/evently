@@ -7,6 +7,8 @@ import type { InvitationConfig } from '../lib/types';
 import { format } from 'date-fns';
 import { transformGDriveLink } from '../lib/utils';
 import RoyalWedding from './invitations/RoyalWedding';
+import ModernMinimal from './invitations/ModernMinimal';
+import VintageGarden from './invitations/VintageGarden';
 
 function StarElement({ progress, index }: { progress: any, index: number }) {
   // Fix "Rules of Hooks" by moving useTransform into a component that renders individually
@@ -41,6 +43,8 @@ export default function InvitationView({ config }: { config: InvitationConfig })
   const isRomantic = config.themeId === 'romantic_clouds';
   const isStarfall = config.themeId === 'golden_starfall';
   const isRoyal = config.themeId === 'royal_wedding';
+  const isModern = config.themeId === 'modern_minimal';
+  const isVintage = config.themeId === 'vintage_garden';
 
   // Parallax transforms for fixed elements
   const y1 = useTransform(smoothProgress, [0, 1], [0, -500]);
@@ -48,9 +52,13 @@ export default function InvitationView({ config }: { config: InvitationConfig })
   const opacity = useTransform(smoothProgress, [0, 0.2, 0.8, 1], [1, 1, 0, 0]);
 
   return (
-    <div ref={containerRef} className={`relative min-h-screen overflow-x-hidden ${isSimple ? 'bg-white text-gray-900' : isRoyal ? 'bg-[#fdfcf6] text-[#2d2a26]' : 'bg-[#05050a] text-white'}`}>
+    <div ref={containerRef} className={`relative min-h-screen overflow-x-hidden ${isSimple ? 'bg-white text-gray-900' : isRoyal ? 'bg-[#fdfcf6] text-[#2d2a26]' : isModern ? 'bg-white text-black' : isVintage ? 'bg-[#f7f3ef] text-[#4a4238]' : 'bg-[#05050a] text-white'}`}>
       {isRoyal ? (
         <RoyalWedding config={config} />
+      ) : isModern ? (
+        <ModernMinimal config={config} />
+      ) : isVintage ? (
+        <VintageGarden config={config} />
       ) : isSimple ? (
         <div className="flex flex-col items-center p-8 md:p-20 relative">
           <div className="max-w-2xl w-full text-center space-y-8">

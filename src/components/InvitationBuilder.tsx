@@ -9,6 +9,8 @@ import type { InvitationConfig } from '../lib/types';
 
 const THEMES = [
   { id: 'royal_wedding', label: 'Royal Wedding (Elegant & Traditional)' },
+  { id: 'modern_minimal', label: 'Modern Minimalist (Clean & Sophisticated)' },
+  { id: 'vintage_garden', label: 'Vintage Garden (Floral & Heritage)' },
   { id: 'romantic_clouds', label: 'Romantic Clouds (Floating Elements)' },
   { id: 'golden_starfall', label: 'Golden Starfall (Space Parallax)' },
   { id: 'simple', label: 'Simple - No Effects' }
@@ -203,10 +205,10 @@ export default function InvitationBuilder({ onBack }: { onBack?: () => void }) {
                   <input required type="datetime-local" value={formData.date} onChange={e => setFormData(p => ({ ...p, date: e.target.value }))} className="w-full bg-[#13151f] border border-[#1a1d2e] rounded-md p-2.5 text-sm text-[#f8fafc] focus:border-[#4db8ff] outline-none" style={{ colorScheme: 'dark' }} />
                 </div>
 
-                {formData.themeId === 'royal_wedding' && (
+                {['royal_wedding', 'modern_minimal', 'vintage_garden'].includes(formData.themeId) && (
                   <div className="space-y-4 pt-4 border-t border-[#1a1d2e] animate-in fade-in slide-in-from-top-2 duration-300">
                     <h3 className="text-sm font-bold text-[#c5a059] border-b border-[#c5a059]/30 pb-2 flex items-center gap-2">
-                      <Sparkles className="w-4 h-4" /> Royal Specific Settings
+                      <Sparkles className="w-4 h-4" /> Premium Template Settings
                     </h3>
                     
                     <div className="space-y-3">
