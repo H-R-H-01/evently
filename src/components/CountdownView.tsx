@@ -6,6 +6,7 @@ import { ArrowLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import type { EventConfig, BoxStyle } from '../lib/types';
+import PremiumCountdown from './countdowns/PremiumCountdown';
 
 function hexToRgba(hex: string, opacity: number) {
   if (!hex) return 'transparent';
@@ -50,6 +51,10 @@ export default function CountdownView({ config }: { config: EventConfig }) {
 
   const cdBox = boxStyles?.countdown || defaultBoxStyle;
   const infoBox = boxStyles?.additionalInfo || defaultBoxStyle;
+
+  if (style?.layout === 'premium') {
+    return <PremiumCountdown config={config} />;
+  }
 
   return (
     <div 

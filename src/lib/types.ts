@@ -51,7 +51,18 @@ export interface EventConfig extends BaseConfig {
       countdown: BoxStyle;
       additionalInfo: BoxStyle;
     };
+    layout?: 'classic' | 'premium';
   };
+  location?: string;
+  venue?: string;
+  message?: string;
+  news?: {
+    date: string;
+    title: string;
+    description: string;
+  }[];
+  heroImageUrl?: string;
+  newsImageUrl?: string;
 }
 
 export interface InvitationConfig extends BaseConfig {

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Plus, Trash2, Calendar, Clock, Copy, Check, ChevronDown, ChevronUp } from 'lucide-react';
+import { Plus, Trash2, Calendar, Clock, Copy, Check, ChevronDown, ChevronUp, Sparkles, Image as ImageIcon } from 'lucide-react';
 import { encodeConfig } from '../lib/utils';
 import { addDays, format, isAfter, isBefore } from 'date-fns';
 import { EventConfig, TextStyle, BoxStyle } from '../lib/types';
@@ -48,7 +48,7 @@ const THEMES = {
     textStyles: {
       title: defaultText('4rem', 'var(--font-playfair)', '#ffd700'),
       preTitle: defaultText('1rem', 'var(--font-inter)', '#ffffff'),
-      countdownNumbers: defaultText('6rem', 'var(--font-playfair)', '#ffffff'),
+      countdownNumbers: defaultText('6rem', 'var(--font-playfair)', '#ffd700'),
       countdownLabels: defaultText('1rem', 'var(--font-inter)', '#ffffff'),
       infoHeaders: defaultText('1.5rem', 'var(--font-playfair)', '#ffd700'),
       infoDescriptions: defaultText('1rem', 'var(--font-inter)', '#ffffff'),
@@ -56,7 +56,7 @@ const THEMES = {
       hostName: defaultText('1.5rem', 'var(--font-playfair)', '#ffd700'),
     },
     boxStyles: {
-      countdown: defaultBox('#ffffff', 5, '#ffffff', 10),
+      countdown: defaultBox('#ffffff', 5, '#ffd700', 10),
       additionalInfo: defaultBox('#ffffff', 5, '#ffd700', 20)
     }
   },
@@ -102,18 +102,18 @@ const THEMES = {
   },
   ocean_depth: {
     name: 'Ocean Depth',
-    bgColor: '#001a33',
+    bgColor: '#000814',
     globalFontFamily: 'var(--font-inter)',
     globalTextColor: '#4db8ff',
     textStyles: {
-      title: defaultText('4rem', 'var(--font-playfair)', '#4db8ff'),
-      preTitle: defaultText('1rem', 'var(--font-inter)', '#e6f2ff'),
+      title: defaultText('4rem', 'var(--font-inter)', '#4db8ff'),
+      preTitle: defaultText('1rem', 'var(--font-inter)', '#0066cc'),
       countdownNumbers: defaultText('6rem', 'var(--font-inter)', '#ffffff'),
-      countdownLabels: defaultText('1rem', 'var(--font-inter)', '#99ccff'),
-      infoHeaders: defaultText('1.5rem', 'var(--font-playfair)', '#4db8ff'),
-      infoDescriptions: defaultText('1rem', 'var(--font-inter)', '#e6f2ff'),
-      hostLabel: defaultText('0.875rem', 'var(--font-inter)', '#99ccff'),
-      hostName: defaultText('1.5rem', 'var(--font-playfair)', '#ffffff'),
+      countdownLabels: defaultText('1rem', 'var(--font-inter)', '#0066cc'),
+      infoHeaders: defaultText('1.5rem', 'var(--font-inter)', '#4db8ff'),
+      infoDescriptions: defaultText('1rem', 'var(--font-inter)', '#ffffff'),
+      hostLabel: defaultText('0.875rem', 'var(--font-inter)', '#0066cc'),
+      hostName: defaultText('1.5rem', 'var(--font-inter)', '#4db8ff'),
     },
     boxStyles: {
       countdown: defaultBox('#0066cc', 10, '#4db8ff', 30),
@@ -178,6 +178,7 @@ const TEXT_KEYS: { key: TextKey; label: string }[] = [
 export default function EventForm({ onBack }: { onBack?: () => void }) {
   const [copied, setCopied] = useState(false);
   const [generatedUrl, setGeneratedUrl] = useState('');
+  const [activeTab, setActiveTab] = useState<'content' | 'style'>('content');
   
   // Date Limits
   const today = new Date();
@@ -186,15 +187,25 @@ export default function EventForm({ onBack }: { onBack?: () => void }) {
   const maxDateStr = format(maxDate, "yyyy-MM-dd'T'HH:mm");
 
   const [formData, setFormData] = useState<EventConfig>({
-    eventName: 'The Royal Wedding',
-    eventDate: minDateStr,
-    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-    userInfo: { name: 'Lord Arthur', email: '', phoneCode: '+1', phone: '' },
-    additionalInfo: [{ header: 'Venue', description: 'The Grand Castle' }],
+    type: 'countdown',
+    eventName: 'Royal Gala Celebration',
+    eventDate: format(addDays(new Date(), 30), "yyyy-MM-dd'T'18:00"),
+    timezone: 'UTC+0',
+    userInfo: { name: 'Julian & Isabella', email: '', phoneCode: '+1', phone: '' },
+    additionalInfo: [
+      { header: 'Attire', description: 'Royal Black Tie' },
+      { header: 'Valet', description: 'Complimentary parking at the main gate' }
+    ],
     style: {
       theme: 'royal_gold',
+      layout: 'classic',
       ...JSON.parse(JSON.stringify(THEMES['royal_gold']))
-    }
+    },
+    message: 'We are counting down to a moment that will change everything.',
+    location: 'The Gilded Palace',
+    news: [
+      { date: 'Step 1', title: 'Grand Arrival', description: 'The gates open for our honored guests.' }
+    ]
   });
 
   const [error, setError] = useState('');
@@ -314,7 +325,6 @@ export default function EventForm({ onBack }: { onBack?: () => void }) {
     <div className="space-y-4 p-4 bg-[#13151f] rounded-lg border border-[#1a1d2e]">
       <h4 className="text-[#d4af37] text-sm tracking-wider uppercase mb-2 font-medium">{label}</h4>
       <div className="grid grid-cols-2 gap-4">
-        {/* Color */}
         <div className="space-y-1">
           <label className="text-xs text-[#94a3b8] uppercase">Color</label>
           <div className="flex items-center gap-2 border border-[#1a1d2e] bg-[#0a0b10] rounded p-1">
@@ -326,7 +336,6 @@ export default function EventForm({ onBack }: { onBack?: () => void }) {
             <span className="text-xs text-[#94a3b8] font-mono">{textStyle.color}</span>
           </div>
         </div>
-        {/* Font Size */}
         <div className="space-y-1">
           <label className="text-xs text-[#94a3b8] uppercase">Size</label>
           <select 
@@ -339,7 +348,6 @@ export default function EventForm({ onBack }: { onBack?: () => void }) {
             ))}
           </select>
         </div>
-        {/* Font Family */}
         <div className="space-y-1">
           <label className="text-xs text-[#94a3b8] uppercase">Family</label>
           <select 
@@ -352,7 +360,6 @@ export default function EventForm({ onBack }: { onBack?: () => void }) {
             ))}
           </select>
         </div>
-        {/* Font Style */}
         <div className="space-y-1">
           <label className="text-xs text-[#94a3b8] uppercase">Style</label>
           <select 
@@ -426,9 +433,10 @@ export default function EventForm({ onBack }: { onBack?: () => void }) {
               <h1 className="text-4xl font-playfair text-[#ffd700] mb-2 tracking-wider">
                 Forge Event
               </h1>
-              <p className="text-[#94a3b8] font-light text-sm">
-                Customize every detail on the left, see it live on the right.
-              </p>
+              <div className="flex gap-4 mt-6 border-b border-[#1a1d2e]">
+                <button type="button" onClick={() => setActiveTab('content')} className={`pb-2 text-xs uppercase tracking-widest font-bold ${activeTab === 'content' ? 'text-[#ffd700] border-b-2 border-[#ffd700]' : 'text-[#64748b]'}`}>Content</button>
+                <button type="button" onClick={() => setActiveTab('style')} className={`pb-2 text-xs uppercase tracking-widest font-bold ${activeTab === 'style' ? 'text-[#ffd700] border-b-2 border-[#ffd700]' : 'text-[#64748b]'}`}>Style</button>
+              </div>
             </div>
 
             {error && (
@@ -438,245 +446,169 @@ export default function EventForm({ onBack }: { onBack?: () => void }) {
             )}
 
             <form onSubmit={handleSubmit} className="space-y-10">
-              {/* Event Info */}
-              <section className="space-y-4">
-                <h3 className="text-lg font-playfair text-[#f8fafc] border-b border-[#1a1d2e] pb-2">Event Details</h3>
-                <div className="space-y-4">
-                  <div>
-                    <label className="text-xs text-[#94a3b8] uppercase tracking-wider font-medium">Event Name</label>
-                    <input required type="text"
-                      value={formData.eventName}
-                      onChange={e => setFormData(prev => ({ ...prev, eventName: e.target.value }))}
-                      className="w-full bg-[#13151f] border border-[#1a1d2e] rounded-lg p-3 text-[#ffd700] focus:border-[#d4af37] outline-none mt-1"
-                    />
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="text-xs text-[#94a3b8] uppercase tracking-wider font-medium flex items-center gap-1"><Calendar className="w-3 h-3"/> Date</label>
-                      <input required type="datetime-local"
-                        min={minDateStr}
-                        max={maxDateStr}
-                        value={formData.eventDate}
-                        onChange={e => setFormData(prev => ({ ...prev, eventDate: e.target.value }))}
-                        className="w-full bg-[#13151f] border border-[#1a1d2e] rounded-lg p-2 text-sm text-[#f8fafc] focus:border-[#d4af37] outline-none mt-1"
-                        style={{ colorScheme: 'dark' }}
-                      />
+              {activeTab === 'content' ? (
+                <div className="space-y-8 animate-in fade-in slide-in-from-left-4 duration-500">
+                  <section className="space-y-4">
+                    <h3 className="text-lg font-playfair text-[#f8fafc] border-b border-[#1a1d2e] pb-2">Event Details</h3>
+                    <div className="space-y-4">
+                      <div>
+                        <label className="text-xs text-[#94a3b8] uppercase tracking-wider font-medium">Event Name</label>
+                        <input required type="text"
+                          value={formData.eventName}
+                          onChange={e => setFormData(prev => ({ ...prev, eventName: e.target.value }))}
+                          className="w-full bg-[#13151f] border border-[#1a1d2e] rounded-lg p-3 text-[#ffd700] focus:border-[#d4af37] outline-none mt-1"
+                        />
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="text-xs text-[#94a3b8] uppercase tracking-wider font-medium flex items-center gap-1"><Calendar className="w-3 h-3"/> Date</label>
+                          <input required type="datetime-local"
+                            min={minDateStr}
+                            max={maxDateStr}
+                            value={formData.eventDate}
+                            onChange={e => setFormData(prev => ({ ...prev, eventDate: e.target.value }))}
+                            className="w-full bg-[#13151f] border border-[#1a1d2e] rounded-lg p-2 text-sm text-[#f8fafc] focus:border-[#d4af37] outline-none mt-1"
+                            style={{ colorScheme: 'dark' }}
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs text-[#94a3b8] uppercase tracking-wider font-medium flex items-center gap-1"><Clock className="w-3 h-3"/> Timezone</label>
+                          <input type="text" readOnly value={formData.timezone}
+                            className="w-full bg-[#0a0b10] border border-[#1a1d2e] rounded-lg p-2 text-sm text-[#94a3b8] mt-1"
+                          />
+                        </div>
+                      </div>
                     </div>
-                    <div>
-                      <label className="text-xs text-[#94a3b8] uppercase tracking-wider font-medium flex items-center gap-1"><Clock className="w-3 h-3"/> Timezone</label>
-                      <input type="text" readOnly value={formData.timezone}
-                        className="w-full bg-[#0a0b10] border border-[#1a1d2e] rounded-lg p-2 text-sm text-[#94a3b8] mt-1"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </section>
+                  </section>
 
-              {/* Host Info */}
-              <section className="space-y-4">
-                <h3 className="text-lg font-playfair text-[#f8fafc] border-b border-[#1a1d2e] pb-2">Host Details</h3>
-                <div className="space-y-4">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <section className="space-y-4">
+                    <h3 className="text-lg font-playfair text-[#f8fafc] border-b border-[#1a1d2e] pb-2">Host Details</h3>
                     <div>
-                      <label className="text-xs text-[#94a3b8] uppercase tracking-wider font-medium">Name</label>
+                      <label className="text-xs text-[#94a3b8] uppercase tracking-wider font-medium">Host Name</label>
                       <input required type="text" value={formData.userInfo.name}
                         onChange={e => setFormData(prev => ({ ...prev, userInfo: { ...prev.userInfo, name: e.target.value } }))}
                         className="w-full bg-[#13151f] border border-[#1a1d2e] rounded-lg p-2 text-sm text-[#f8fafc] focus:border-[#d4af37] outline-none mt-1"
                       />
                     </div>
-                    <div>
-                      <label className="text-xs text-[#94a3b8] uppercase tracking-wider font-medium">Email</label>
-                      <input type="email" value={formData.userInfo.email}
-                        onChange={e => setFormData(prev => ({ ...prev, userInfo: { ...prev.userInfo, email: e.target.value } }))}
-                        className="w-full bg-[#13151f] border border-[#1a1d2e] rounded-lg p-2 text-sm text-[#f8fafc] focus:border-[#d4af37] outline-none mt-1"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </section>
+                  </section>
 
-              {/* Additional Info Section */}
-              <section className="space-y-4">
-                <h3 className="text-lg font-playfair text-[#f8fafc] border-b border-[#1a1d2e] pb-2">Additional Cards</h3>
-                <div className="space-y-3">
-                  {formData.additionalInfo.map((info, index) => (
-                    <div key={index} className="p-3 bg-[#13151f] border border-[#1a1d2e] rounded-lg relative group">
-                      <div className="space-y-2">
-                        <input required type="text" value={info.header} onChange={e => handleInfoChange(index, 'header', e.target.value)}
-                          className="w-full bg-transparent border-b border-[#1a1d2e] p-1 text-[#f8fafc] text-sm focus:border-[#d4af37] outline-none" placeholder="Header"
-                        />
-                        <textarea required value={info.description} onChange={e => handleInfoChange(index, 'description', e.target.value)} rows={2}
-                          className="w-full bg-[#0a0b10] border border-[#1a1d2e] rounded p-2 text-[#f8fafc] text-xs focus:border-[#d4af37] outline-none resize-none" placeholder="Description"
-                        />
-                      </div>
-                      {formData.additionalInfo.length > 1 && (
-                        <button type="button" onClick={() => handleRemoveField(index)}
-                          className="absolute -right-2 -top-2 bg-[#1a1d2e] p-1.5 rounded-full border border-red-500/30 text-red-400 opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500/20"
-                        >
-                          <Trash2 className="w-3 h-3" />
-                        </button>
-                      )}
-                    </div>
-                  ))}
-                  <button type="button" onClick={handleAddField} className="text-xs text-[#d4af37] flex items-center gap-1 hover:underline">
-                    <Plus className="w-3 h-3" /> Add Card
-                  </button>
-                </div>
-              </section>
-
-              {/* Advanced Styling */}
-              <section className="space-y-6">
-                <h3 className="text-lg font-playfair text-[#f8fafc] border-b border-[#1a1d2e] pb-2">Styling & Aesthetics</h3>
-                
-                {/* Themes */}
-                <div className="space-y-2">
-                  <label className="text-xs text-[#94a3b8] uppercase font-bold">Base Theme</label>
-                  <div className="grid grid-cols-2 lg:grid-cols-3 gap-2">
-                    {(Object.entries(THEMES) as [keyof typeof THEMES, any][]).map(([key, theme]) => (
-                      <button
-                        key={key} type="button"
-                        onClick={() => applyTheme(key)}
-                        className={`p-2 rounded border text-xs text-center transition-all ${
-                          formData.style.theme === key 
-                            ? 'border-[#d4af37] bg-[#d4af37]/10 text-[#ffd700]' 
-                            : 'border-[#1a1d2e] bg-[#13151f] text-[#94a3b8] hover:border-[#d4af37]/50'
-                        }`}
-                      >
-                        {theme.name}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-xs text-[#94a3b8] uppercase font-bold">Background & Global</label>
-                  <div className="flex items-center gap-2 border border-[#1a1d2e] bg-[#13151f] rounded-lg p-2 w-max">
-                    <span className="text-xs text-[#94a3b8]">Background</span>
-                    <input type="color" 
-                      value={formData.style.bgColor}
-                      onChange={e => setFormData(prev => ({ ...prev, style: { ...prev.style, bgColor: e.target.value } }))}
-                      className="w-6 h-6 rounded cursor-pointer bg-transparent border-0 p-0 ml-2"
-                    />
-                  </div>
-                </div>
-
-                {/* Common Text Styles */}
-                <div className="bg-[#13151f] border border-[#1a1d2e] rounded-lg p-4">
-                  <h4 className="text-sm text-[#ffd700] mb-3">Apply Common Text Style</h4>
-                  <p className="text-xs text-[#94a3b8] mb-4">This will override ALL individual text properties below.</p>
-                  <div className="grid grid-cols-2 gap-3 mb-4">
-                    <div>
-                      <label className="text-[10px] text-[#64748b] uppercase">Color</label>
-                      <input type="color" value={commonStyle.color} onChange={e => setCommonStyle(p => ({ ...p, color: e.target.value }))} className="w-full h-8 cursor-pointer rounded" />
-                    </div>
-                    <div>
-                      <label className="text-[10px] text-[#64748b] uppercase">Size (Overrides all)</label>
-                      <select value={commonStyle.fontSize} onChange={e => setCommonStyle(p => ({ ...p, fontSize: e.target.value }))} className="w-full bg-[#0a0b10] border border-[#1a1d2e] rounded p-1.5 text-xs text-white">
-                        {FONT_SIZES.map(f => <option key={f.value} value={f.value}>{f.label}</option>)}
-                      </select>
-                    </div>
-                    <div>
-                      <label className="text-[10px] text-[#64748b] uppercase">Font Family</label>
-                      <select value={commonStyle.fontFamily} onChange={e => setCommonStyle(p => ({ ...p, fontFamily: e.target.value }))} className="w-full bg-[#0a0b10] border border-[#1a1d2e] rounded p-1.5 text-xs text-white">
-                        {FONTS.map(f => <option key={f.value} value={f.value}>{f.label}</option>)}
-                      </select>
-                    </div>
-                    <div>
-                      <label className="text-[10px] text-[#64748b] uppercase">Font Style</label>
-                      <select value={commonStyle.fontStyle} onChange={e => setCommonStyle(p => ({ ...p, fontStyle: e.target.value }))} className="w-full bg-[#0a0b10] border border-[#1a1d2e] rounded p-1.5 text-xs text-white">
-                        <option value="normal">Normal</option>
-                        <option value="italic">Italic</option>
-                      </select>
-                    </div>
-                  </div>
-                  <button type="button" onClick={applyCommonStyle} className="w-full py-2 bg-[#1a1d2e] hover:bg-[#d4af37]/20 border border-[#d4af37]/50 text-[#d4af37] rounded text-xs transition-colors">
-                    Apply to All Texts
-                  </button>
-                </div>
-
-                {/* Individual Text Styles mapped in accordions */}
-                <div className="space-y-2">
-                  <label className="text-xs text-[#94a3b8] uppercase font-bold">Individual Text Elements</label>
-                  {TEXT_KEYS.map(({ key, label }) => (
-                    <div key={key} className="border border-[#1a1d2e] rounded-lg overflow-hidden bg-[#0a0b10]">
-                      <button type="button"
-                        onClick={() => setActiveAccordion(activeAccordion === key ? null : key)}
-                        className="w-full flex justify-between items-center p-3 text-sm text-[#f8fafc] hover:bg-[#13151f] transition-colors"
-                      >
-                        {label}
-                        {activeAccordion === key ? <ChevronUp className="w-4 h-4 text-[#d4af37]" /> : <ChevronDown className="w-4 h-4 text-[#64748b]" />}
-                      </button>
-                      {activeAccordion === key && (
-                        <div className="border-t border-[#1a1d2e]">
-                          <TextStyleEditor 
-                            label={label}
-                            textStyle={formData.style.textStyles[key]} 
-                            onChange={(field, val) => updateIndividualTextStyle(key, field, val)} 
+                  <section className="space-y-4">
+                    <h3 className="text-lg font-playfair text-[#f8fafc] border-b border-[#1a1d2e] pb-2">Additional Info Cards</h3>
+                    <div className="space-y-3">
+                      {formData.additionalInfo.map((info, index) => (
+                        <div key={index} className="p-3 bg-[#13151f] border border-[#1a1d2e] rounded-lg relative group">
+                          <input required type="text" value={info.header} onChange={e => handleInfoChange(index, 'header', e.target.value)}
+                            className="w-full bg-transparent border-b border-[#1a1d2e] p-1 text-[#f8fafc] text-sm mb-2 outline-none" placeholder="Header"
                           />
+                          <textarea required value={info.description} onChange={e => handleInfoChange(index, 'description', e.target.value)} rows={2}
+                            className="w-full bg-[#0a0b10] border border-[#1a1d2e] rounded p-2 text-[#f8fafc] text-xs outline-none resize-none" placeholder="Description"
+                          />
+                          <button type="button" onClick={() => handleRemoveField(index)} className="absolute -right-2 -top-2 bg-[#1a1d2e] p-1 text-red-400 rounded-full border border-red-500/30 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <Trash2 className="w-3 h-3" />
+                          </button>
                         </div>
-                      )}
+                      ))}
+                      <button type="button" onClick={handleAddField} className="text-xs text-[#d4af37] flex items-center gap-1 hover:underline">
+                        <Plus className="w-3 h-3" /> Add Card
+                      </button>
                     </div>
-                  ))}
+                  </section>
                 </div>
+              ) : (
+                <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-500">
+                  <div className="space-y-2">
+                    <label className="text-xs text-[#94a3b8] uppercase font-bold">Countdown Layout</label>
+                    <div className="grid grid-cols-2 gap-3">
+                      <button type="button" onClick={() => setFormData(p => ({ ...p, style: { ...p.style, layout: 'classic' } }))} className={`p-4 rounded-xl border flex flex-col items-center gap-2 transition-all ${formData.style.layout !== 'premium' ? 'bg-[#ffd700]/10 border-[#ffd700] text-[#ffd700]' : 'bg-[#13151f] border-[#1a1d2e] text-[#94a3b8]'}`}>
+                        <Clock className="w-5 h-5" />
+                        <span className="text-[10px] font-bold uppercase">Basic Clock</span>
+                      </button>
+                      <button type="button" onClick={() => setFormData(p => ({ ...p, style: { ...p.style, layout: 'premium' } }))} className={`p-4 rounded-xl border flex flex-col items-center gap-2 transition-all ${formData.style.layout === 'premium' ? 'bg-[#4db8ff]/10 border-[#4db8ff] text-[#4db8ff]' : 'bg-[#13151f] border-[#1a1d2e] text-[#94a3b8]'}`}>
+                        <Sparkles className="w-5 h-5" />
+                        <span className="text-[10px] font-bold uppercase">StoryScroll</span>
+                      </button>
+                    </div>
+                  </div>
 
-                {/* Box Styles */}
-                <div className="space-y-2 pt-4 border-t border-[#1a1d2e]">
-                  <label className="text-xs text-[#94a3b8] uppercase font-bold">Container Box Controls</label>
-                  {['countdown', 'additionalInfo'].map((boxKey) => {
-                    const bKey = boxKey as keyof NonNullable<EventConfig['style']['boxStyles']>;
-                    const boxProps = formData.style.boxStyles?.[bKey] || defaultBox('#ffffff', 5, '#ffffff', 10);
-                    
-                    return (
-                      <div key={bKey} className="border border-[#1a1d2e] rounded-lg overflow-hidden bg-[#0a0b10] p-3 space-y-3">
-                        <div className="flex items-center justify-between border-b border-[#1a1d2e] pb-2">
-                          <span className="text-sm font-playfair text-[#ffd700] tracking-wider">{bKey === 'countdown' ? 'Countdown Container' : 'Card Container'}</span>
-                          <label className="flex items-center gap-2 cursor-pointer text-xs text-[#94a3b8] hover:text-white transition-colors">
-                            Enabled
-                            <input type="checkbox" checked={boxProps.enabled} onChange={e => {
-                               setFormData(prev => ({ ...prev, style: { ...prev.style, boxStyles: { ...prev.style.boxStyles, [bKey]: { ...boxProps, enabled: e.target.checked } } as any } }));
-                            }} className="accent-[#d4af37] w-4 h-4 cursor-pointer" />
-                          </label>
-                        </div>
-                        {boxProps.enabled && (
-                          <div className="grid grid-cols-2 gap-4 pt-1">
-                            <div className="space-y-1">
-                              <label className="text-[10px] text-[#94a3b8] uppercase">BG Color</label>
-                              <div className="flex items-center gap-2 border border-[#1a1d2e] bg-[#13151f] rounded p-1">
-                                <input type="color" value={boxProps.backgroundColor} onChange={e => setFormData(prev => ({ ...prev, style: { ...prev.style, boxStyles: { ...prev.style.boxStyles, [bKey]: { ...boxProps, backgroundColor: e.target.value } } as any } }))} className="w-6 h-6 rounded cursor-pointer border-0 p-0 bg-transparent" />
-                                <span className="text-xs text-[#94a3b8] font-mono uppercase">{boxProps.backgroundColor}</span>
-                              </div>
-                            </div>
-                            <div className="space-y-1">
-                              <label className="text-[10px] text-[#94a3b8] uppercase flex justify-between">BG Opacity <span>{boxProps.backgroundOpacity}%</span></label>
-                              <input type="range" min="0" max="100" value={boxProps.backgroundOpacity} onChange={e => setFormData(prev => ({ ...prev, style: { ...prev.style, boxStyles: { ...prev.style.boxStyles, [bKey]: { ...boxProps, backgroundOpacity: parseInt(e.target.value) } } as any } }))} className="w-full accent-[#d4af37]" />
-                            </div>
-                            <div className="space-y-1">
-                              <label className="text-[10px] text-[#94a3b8] uppercase">Border Color</label>
-                              <div className="flex items-center gap-2 border border-[#1a1d2e] bg-[#13151f] rounded p-1">
-                                <input type="color" value={boxProps.borderColor} onChange={e => setFormData(prev => ({ ...prev, style: { ...prev.style, boxStyles: { ...prev.style.boxStyles, [bKey]: { ...boxProps, borderColor: e.target.value } } as any } }))} className="w-6 h-6 rounded cursor-pointer border-0 p-0 bg-transparent" />
-                                <span className="text-xs text-[#94a3b8] font-mono uppercase">{boxProps.borderColor}</span>
-                              </div>
-                            </div>
-                            <div className="space-y-1">
-                              <label className="text-[10px] text-[#94a3b8] uppercase flex justify-between">Border Opacity <span>{boxProps.borderOpacity}%</span></label>
-                              <input type="range" min="0" max="100" value={boxProps.borderOpacity} onChange={e => setFormData(prev => ({ ...prev, style: { ...prev.style, boxStyles: { ...prev.style.boxStyles, [bKey]: { ...boxProps, borderOpacity: parseInt(e.target.value) } } as any } }))} className="w-full accent-[#d4af37]" />
-                            </div>
+                  {formData.style.layout === 'premium' && (
+                    <div className="space-y-4 p-4 bg-[#ffd700]/5 border border-[#ffd700]/20 rounded-xl animate-in zoom-in-95 duration-300">
+                      <h3 className="text-xs font-bold text-[#ffd700] flex items-center gap-2 uppercase tracking-widest italic mb-2">
+                        <Sparkles className="w-4 h-4" /> StoryScroll Premium Fields
+                      </h3>
+                      <div className="space-y-4">
+                        <div className="space-y-1">
+                          <label className="text-[10px] text-[#94a3b8] uppercase tracking-widest">Hero Image URL</label>
+                          <div className="relative">
+                            <input type="text" value={formData.heroImageUrl || ''} onChange={e => setFormData(p => ({ ...p, heroImageUrl: e.target.value }))} placeholder="Direct image link" className="w-full bg-[#0a0b10] border border-white/10 rounded p-2.5 text-xs text-white pl-9 outline-none focus:border-[#ffd700]" />
+                            <ImageIcon className="absolute left-3 top-2.5 w-4 h-4 text-gray-500" />
                           </div>
-                        )}
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-[10px] text-[#94a3b8] uppercase tracking-widest">Personal Message</label>
+                          <textarea value={formData.message || ''} onChange={e => setFormData(p => ({ ...p, message: e.target.value }))} placeholder="Share a few words..." className="w-full bg-[#0a0b10] border border-white/10 rounded p-2.5 text-xs text-white min-h-[80px] outline-none focus:border-[#ffd700]" />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-[10px] text-[#94a3b8] uppercase tracking-widest">Location Name</label>
+                          <input type="text" value={formData.location || ''} onChange={e => setFormData(p => ({ ...p, location: e.target.value }))} placeholder="e.g. Grand Terrace" className="w-full bg-[#0a0b10] border border-white/10 rounded p-2.5 text-xs text-white outline-none focus:border-[#ffd700]" />
+                        </div>
+                        
+                        <div className="pt-4 border-t border-white/10">
+                           <div className="flex justify-between items-center mb-4">
+                              <label className="text-[10px] text-[#94a3b8] uppercase font-bold tracking-widest">Event Milestones</label>
+                              <button type="button" onClick={() => setFormData(p => ({ ...p, news: [...(p.news || []), { date: '', title: '', description: '' }] }))} className="text-[10px] bg-[#ffd700] text-black px-2 py-1 rounded font-bold hover:scale-105 transition-transform flex items-center gap-1">
+                                <Plus className="w-3 h-3" /> Add
+                              </button>
+                           </div>
+                           <div className="space-y-3">
+                              {(formData.news || []).map((item, idx) => (
+                                <div key={idx} className="p-3 bg-black/40 border border-white/5 rounded-lg space-y-2 relative group">
+                                  <button type="button" onClick={() => setFormData(p => ({ ...p, news: (p.news || []).filter((_, i) => i !== idx) }))} className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity text-red-500">
+                                    <Trash2 className="w-3 h-3" />
+                                  </button>
+                                  <input type="text" value={item.date} onChange={e => setFormData(p => ({ ...p, news: (p.news || []).map((n, i) => i === idx ? { ...n, date: e.target.value } : n) }))} placeholder="Date/Time" className="w-full bg-transparent border-b border-white/10 p-1 text-[10px] text-[#ffd700] outline-none" />
+                                  <input type="text" value={item.title} onChange={e => setFormData(p => ({ ...p, news: (p.news || []).map((n, i) => i === idx ? { ...n, title: e.target.value } : n) }))} placeholder="Title" className="w-full bg-transparent border-b border-white/10 p-1 text-xs text-white outline-none" />
+                                  <textarea value={item.description} onChange={e => setFormData(p => ({ ...p, news: (p.news || []).map((n, i) => i === idx ? { ...n, description: e.target.value } : n) }))} placeholder="Description" className="w-full bg-transparent p-1 text-[10px] text-gray-500 outline-none" />
+                                </div>
+                              ))}
+                           </div>
+                        </div>
                       </div>
-                    )
-                  })}
+                    </div>
+                  )}
+
+                  <div className="space-y-2">
+                    <label className="text-xs text-[#94a3b8] uppercase font-bold">Theme & Style</label>
+                    <div className="grid grid-cols-3 gap-2">
+                       {Object.entries(THEMES).map(([id, theme]) => (
+                         <button key={id} type="button" onClick={() => applyTheme(id as keyof typeof THEMES)} className={`p-2 rounded border text-[10px] text-center transition-all ${formData.style.theme === id ? 'border-[#ffd700] bg-[#ffd700]/10 text-[#ffd700]' : 'border-[#1a1d2e] bg-[#13151f] text-[#94a3b8]'}`}>
+                            {theme.name}
+                         </button>
+                       ))}
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <label className="text-xs text-[#94a3b8] uppercase font-bold">Individual Text Elements</label>
+                    <div className="space-y-2">
+                      {TEXT_KEYS.map(({ key, label }) => (
+                        <div key={key} className="border border-[#1a1d2e] rounded-lg overflow-hidden bg-[#0a0b10]">
+                          <button type="button" onClick={() => setActiveAccordion(activeAccordion === key ? null : key)} className="w-full flex justify-between items-center p-3 text-sm text-white hover:bg-[#13151f] transition-colors">
+                            {label}
+                            {activeAccordion === key ? <ChevronUp className="w-4 h-4 text-[#ffd700]" /> : <ChevronDown className="w-4 h-4 text-gray-600" />}
+                          </button>
+                          {activeAccordion === key && (
+                             <TextStyleEditor textStyle={formData.style.textStyles[key]} onChange={(f, v) => updateIndividualTextStyle(key, f, v)} label={label} />
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
+              )}
 
-              </section>
-
-              {/* Fixed Bottom Action */}
-              <div className="fixed bottom-0 left-0 w-full lg:w-[45%] p-4 bg-gradient-to-t from-[#0a0b10] via-[#0a0b10] to-transparent z-10 block pointer-events-none">
-                <button 
-                  type="submit"
-                  className="w-full pointer-events-auto px-6 py-4 bg-gradient-to-r from-[#d4af37] to-[#ffd700] hover:from-[#ffd700] hover:to-[#ffd700] text-[#0a0b10] text-sm font-playfair tracking-widest uppercase font-bold rounded-lg shadow-xl transition-all transform hover:-translate-y-1 active:scale-95 mx-auto block"
-                >
-                  Create Endpoint
+              <div className="fixed bottom-0 left-0 w-full lg:w-[45%] p-4 bg-gradient-to-t from-[#0a0b10] via-[#0a0b10] to-transparent z-40">
+                <button type="submit" className="w-full py-4 bg-gradient-to-r from-[#d4af37] to-[#ffd700] text-[#0a0b10] text-sm font-bold uppercase tracking-widest rounded-lg shadow-xl hover:-translate-y-1 transition-transform transform active:scale-95">
+                  Create Royal Countdown
                 </button>
               </div>
             </form>
@@ -686,15 +618,12 @@ export default function EventForm({ onBack }: { onBack?: () => void }) {
 
       {/* RIGHT COLUMN: Live Preview */}
       {!generatedUrl && (
-        <div className="w-full lg:flex-1 h-screen overflow-y-auto bg-black relative border-l border-[#1a1d2e]">
-          <div className="absolute top-4 right-4 z-50 bg-black/60 border border-[#1a1d2e] px-4 py-1.5 rounded-full text-xs font-mono text-[#d4af37] backdrop-blur flex items-center gap-2">
+        <div className="w-full lg:flex-1 h-screen overflow-hidden bg-black relative border-l border-[#1a1d2e] z-10">
+          <div className="absolute top-4 right-4 z-50 bg-black/60 border border-[#1a1d2e] px-4 py-1.5 rounded-full text-xs font-mono text-[#ffd700] backdrop-blur flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
             LIVE PREVIEW
           </div>
-          {/* Prevent clicks in preview area so it behaves like a view-only canvas */}
-          <div className="pointer-events-none min-h-screen">
-            <CountdownView config={formData} />
-          </div>
+          <CountdownView config={formData} />
         </div>
       )}
     </div>

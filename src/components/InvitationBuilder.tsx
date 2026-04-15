@@ -11,6 +11,8 @@ const THEMES = [
   { id: 'royal_wedding', label: 'Royal Wedding (Elegant & Traditional)' },
   { id: 'modern_minimal', label: 'Modern Minimalist (Clean & Sophisticated)' },
   { id: 'vintage_garden', label: 'Vintage Garden (Floral & Heritage)' },
+  { id: 'royal_birthday', label: 'Royal Birthday (Grand Celebration)' },
+  { id: 'neon_birthday', label: 'Neon Birthday (Modern & High-Energy)' },
   { id: 'romantic_clouds', label: 'Romantic Clouds (Floating Elements)' },
   { id: 'golden_starfall', label: 'Golden Starfall (Space Parallax)' },
   { id: 'simple', label: 'Simple - No Effects' }
@@ -58,6 +60,8 @@ export default function InvitationBuilder({ onBack }: { onBack?: () => void }) {
     }
   });
 
+  const isPremiumTheme = ['royal_wedding', 'modern_minimal', 'vintage_garden', 'royal_birthday', 'neon_birthday'].includes(formData.themeId);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const configString = encodeConfig(formData);
@@ -96,9 +100,11 @@ export default function InvitationBuilder({ onBack }: { onBack?: () => void }) {
                   setFormData(prev => ({ 
                     ...prev, 
                     eventType: type,
+                    themeId: type === 'marriage' ? 'royal_wedding' : type === 'birthday' ? 'royal_birthday' : 'simple',
                     title: type === 'marriage' ? 'You are joyfully invited to celebrate the union of' : 
                            type === 'birthday' ? 'Join us for a spectacular birthday celebration for' : 
-                           'You are invited to a special event'
+                           'You are invited to a special event',
+                    secondaryName: type === 'marriage' ? prev.secondaryName || 'Isabella' : undefined
                   }));
                   setStep(2);
                 }}
@@ -205,7 +211,7 @@ export default function InvitationBuilder({ onBack }: { onBack?: () => void }) {
                   <input required type="datetime-local" value={formData.date} onChange={e => setFormData(p => ({ ...p, date: e.target.value }))} className="w-full bg-[#13151f] border border-[#1a1d2e] rounded-md p-2.5 text-sm text-[#f8fafc] focus:border-[#4db8ff] outline-none" style={{ colorScheme: 'dark' }} />
                 </div>
 
-                {['royal_wedding', 'modern_minimal', 'vintage_garden'].includes(formData.themeId) && (
+                {isPremiumTheme && (
                   <div className="space-y-4 pt-4 border-t border-[#1a1d2e] animate-in fade-in slide-in-from-top-2 duration-300">
                     <h3 className="text-sm font-bold text-[#c5a059] border-b border-[#c5a059]/30 pb-2 flex items-center gap-2">
                       <Sparkles className="w-4 h-4" /> Premium Template Settings
