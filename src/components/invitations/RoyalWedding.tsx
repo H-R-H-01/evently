@@ -63,18 +63,18 @@ export default function RoyalWedding({ config }: { config: InvitationConfig }) {
           >
             <div className="absolute -inset-4 border border-[#c5a059]/20 translate-x-4 translate-y-4" />
             
-            <div className="relative z-10 p-2 bg-white shadow-[0_10px_30px_-10px_rgba(197,160,89,0.2)]">
+            <div className="relative z-10 bg-white shadow-[0_10px_30px_-10px_rgba(197,160,89,0.2)]">
                 {config.imageUrl ? (
                     <div 
-                        className="overflow-hidden flex justify-center"
+                        className="overflow-hidden flex justify-center items-center"
                         style={{ 
-                            padding: `${config.imageStyle?.paddingY || 0}px ${config.imageStyle?.paddingX || 0}px`
+                            padding: `${config.imageStyle?.paddingY ?? 0}px ${config.imageStyle?.paddingX ?? 0}px`
                         }}
                     >
                         <img 
                             src={transformGDriveLink(config.imageUrl)} 
                             alt="Invitation" 
-                            className="w-full h-auto object-contain"
+                            className="w-full h-auto block"
                             style={{ 
                                 border: config.imageStyle?.showBorder ? `1px solid ${config.imageStyle.borderColor}` : 'none'
                              }}

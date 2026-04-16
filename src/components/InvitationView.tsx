@@ -11,6 +11,18 @@ import ModernMinimal from './invitations/ModernMinimal';
 import VintageGarden from './invitations/VintageGarden';
 import RoyalBirthday from './invitations/RoyalBirthday';
 import NeonBirthday from './invitations/NeonBirthday';
+import { TemplateFooter } from './TemplateFooter';
+
+const THEME_LABELS: Record<string, string> = {
+  royal_wedding: 'Royal Wedding',
+  modern_minimal: 'Modern Minimalist',
+  vintage_garden: 'Vintage Garden',
+  royal_birthday: 'Royal Birthday',
+  neon_birthday: 'Neon Birthday Party',
+  romantic_clouds: 'Romantic Clouds',
+  golden_starfall: 'Golden Starfall',
+  simple: 'Simple Invitation'
+};
 
 function StarElement({ progress, index }: { progress: any, index: number }) {
   // Fix "Rules of Hooks" by moving useTransform into a component that renders individually
@@ -232,6 +244,11 @@ export default function InvitationView({ config }: { config: InvitationConfig })
           </section>
         </>
       )}
+      <TemplateFooter 
+        type="invitation" 
+        themeId={config.themeId} 
+        themeLabel={THEME_LABELS[config.themeId]} 
+      />
     </div>
   );
 }

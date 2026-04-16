@@ -7,6 +7,7 @@ import type { EventConfig } from '../../lib/types';
 import { format, differenceInDays, differenceInHours, differenceInMinutes, differenceInSeconds } from 'date-fns';
 import { transformGDriveLink } from '../../lib/utils';
 import { useEffect, useState } from 'react';
+import { TemplateFooter } from '../TemplateFooter';
 
 export default function PremiumCountdown({ config }: { config: EventConfig }) {
   const targetDate = new Date(config.eventDate);
@@ -143,6 +144,19 @@ export default function PremiumCountdown({ config }: { config: EventConfig }) {
             <p className="text-xs tracking-[0.4em] font-black uppercase italic">Legacy in Progress</p>
          </div>
       </section>
+
+      <TemplateFooter 
+        type="countdown" 
+        themeId={config.style?.theme} 
+        themeLabel={config.style?.theme ? {
+          royal_gold: 'Royal Gold',
+          midnight_silver: 'Midnight Silver',
+          rose_elegance: 'Rose Elegance',
+          ocean_depth: 'Ocean Depth',
+          neon_cyber: 'Neon Cyber',
+          emerald_forest: 'Emerald Forest'
+        }[config.style.theme] : 'Premium Story'} 
+      />
     </div>
   );
 }

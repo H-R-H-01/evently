@@ -14,12 +14,17 @@ import type { AnyConfig, EventConfig, InvitationConfig } from '../lib/types';
 export default function AppClient() {
   const searchParams = useSearchParams();
   const dataQuery = searchParams.get('data');
+  const builderQuery = searchParams.get('builder');
+  const themeQuery = searchParams.get('theme');
+  
   const [isMounted, setIsMounted] = useState(false);
   const [activeBuilder, setActiveBuilder] = useState<'home' | 'countdown' | 'invitation'>('home');
 
   useEffect(() => {
     setIsMounted(true);
-  }, []);
+    if (builderQuery === 'countdown') setActiveBuilder('countdown');
+    if (builderQuery === 'invitation') setActiveBuilder('invitation');
+  }, [builderQuery]);
 
   if (!isMounted) {
     return <LoadingSpinner />;
@@ -40,7 +45,10 @@ export default function AppClient() {
   }
 
   if (activeBuilder === 'invitation') {
-    return <InvitationBuilder onBack={() => setActiveBuilder('home')} />;
+    return <InvitationBuilder 
+      onBack={() => setActiveBuilder('home')} 
+      initialThemeId={themeQuery || undefined} 
+    />;
   }
 
   return <HomeTiles onSelect={setActiveBuilder} />;

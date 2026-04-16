@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import type { EventConfig, BoxStyle } from '../lib/types';
 import PremiumCountdown from './countdowns/PremiumCountdown';
+import { TemplateFooter } from './TemplateFooter';
 
 function hexToRgba(hex: string, opacity: number) {
   if (!hex) return 'transparent';
@@ -176,7 +177,6 @@ export default function CountdownView({ config }: { config: EventConfig }) {
         </div>
 
       </motion.div>
-      
       <Link 
         href="/"
         className="fixed bottom-6 right-6 p-4 rounded-full bg-black/40 border border-white/10 backdrop-blur-md hover:bg-black/60 hover:scale-105 transition-all flex items-center gap-2 group z-50 text-white"
@@ -184,6 +184,19 @@ export default function CountdownView({ config }: { config: EventConfig }) {
         <ArrowLeft className="w-4 h-4" />
         <span className="text-xs uppercase tracking-widest font-inter opacity-0 w-0 overflow-hidden group-hover:opacity-100 group-hover:w-auto transition-all max-w-[100px]">Create</span>
       </Link>
+
+      <TemplateFooter 
+        type="countdown" 
+        themeId={style?.theme} 
+        themeLabel={style?.theme ? {
+          royal_gold: 'Royal Gold',
+          midnight_silver: 'Midnight Silver',
+          rose_elegance: 'Rose Elegance',
+          ocean_depth: 'Ocean Depth',
+          neon_cyber: 'Neon Cyber',
+          emerald_forest: 'Emerald Forest'
+        }[style.theme] : 'Classic Countdown'} 
+      />
     </div>
   );
 }

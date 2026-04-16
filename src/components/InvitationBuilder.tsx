@@ -8,17 +8,17 @@ import InvitationView from './InvitationView';
 import type { InvitationConfig } from '../lib/types';
 
 const THEMES = [
-  { id: 'royal_wedding', label: 'Royal Wedding (Elegant & Traditional)' },
-  { id: 'modern_minimal', label: 'Modern Minimalist (Clean & Sophisticated)' },
-  { id: 'vintage_garden', label: 'Vintage Garden (Floral & Heritage)' },
-  { id: 'royal_birthday', label: 'Royal Birthday (Grand Celebration)' },
-  { id: 'neon_birthday', label: 'Neon Birthday (Modern & High-Energy)' },
-  { id: 'romantic_clouds', label: 'Romantic Clouds (Floating Elements)' },
-  { id: 'golden_starfall', label: 'Golden Starfall (Space Parallax)' },
-  { id: 'simple', label: 'Simple - No Effects' }
+  { id: 'royal_wedding', label: 'Royal Wedding (Elegant & Traditional)', categories: ['marriage'] },
+  { id: 'modern_minimal', label: 'Modern Minimalist (Clean & Sophisticated)', categories: ['marriage'] },
+  { id: 'vintage_garden', label: 'Vintage Garden (Floral & Heritage)', categories: ['marriage'] },
+  { id: 'royal_birthday', label: 'Royal Birthday (Grand Celebration)', categories: ['birthday'] },
+  { id: 'neon_birthday', label: 'Neon Birthday (Modern & High-Energy)', categories: ['birthday'] },
+  { id: 'romantic_clouds', label: 'Romantic Clouds (Floating Elements)', categories: ['marriage', 'birthday'] },
+  { id: 'golden_starfall', label: 'Golden Starfall (Space Parallax)', categories: ['marriage', 'birthday'] },
+  { id: 'simple', label: 'Simple - No Effects', categories: ['marriage', 'birthday'] }
 ];
 
-export default function InvitationBuilder({ onBack }: { onBack?: () => void }) {
+export default function InvitationBuilder({ onBack, initialThemeId }: { onBack?: () => void, initialThemeId?: string }) {
   const [step, setStep] = useState<1 | 2>(1);
   const [copied, setCopied] = useState(false);
   const [generatedUrl, setGeneratedUrl] = useState('');
@@ -26,38 +26,41 @@ export default function InvitationBuilder({ onBack }: { onBack?: () => void }) {
   const today = new Date();
   const defaultDateStr = format(addDays(today, 30), "yyyy-MM-dd'T'18:00");
 
-  const [formData, setFormData] = useState<InvitationConfig>({
-    type: 'invitation',
-    eventType: 'marriage',
-    title: 'You are joyfully invited to celebrate the union of',
-    primaryName: 'Julian',
-    secondaryName: 'Isabella',
-    date: defaultDateStr,
-    imageUrl: 'https://images.unsplash.com/photo-1519741497674-611481863552?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-    heroImageUrl: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
-    newsImageUrl: 'https://images.unsplash.com/photo-1519741497674-611481863552?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-    themeId: 'royal_wedding',
-    location: 'The Gilded Palace',
-    venue: '123 Serenity Drive, Royal Estates',
-    message: 'Together with our families, we invite you to witness a promise of a lifetime. Join us as we celebrate the union of two souls in a setting fit for royalty.',
-    news: [
-      {
-        date: "April 10, 2026",
-        title: "The Venue Finalized",
-        description: "We are thrilled to announce that the Gilded Palace will host our special day. The ballroom is currently being prepared with custom floral designs."
-      },
-      {
-        date: "May 15, 2026",
-        title: "Menu Selection",
-        description: "A five-course royal banquet has been curated by Chef Alessandro. Featuring local seasonal delicacies and vintage champagne."
+  const [formData, setFormData] = useState<InvitationConfig>(() => {
+    const eventType = initialThemeId && ['royal_birthday', 'neon_birthday'].includes(initialThemeId) ? 'birthday' : 'marriage';
+    return {
+      type: 'invitation',
+      eventType,
+      title: eventType === 'marriage' ? 'A Royal Invitation' : 'A Royal Celebration',
+      primaryName: eventType === 'marriage' ? 'Julian' : 'Prince Julian',
+      secondaryName: eventType === 'marriage' ? 'Isabella' : undefined,
+      date: defaultDateStr,
+      imageUrl: 'https://images.unsplash.com/photo-1519741497674-611481863552?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+      heroImageUrl: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+      newsImageUrl: 'https://images.unsplash.com/photo-1519741497674-611481863552?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+      themeId: initialThemeId || 'royal_wedding',
+      location: 'The Gilded Palace',
+      venue: '123 Serenity Drive, Royal Estates',
+      message: 'Together with our families, we invite you to witness a promise of a lifetime. Join us as we celebrate the union of two souls in a setting fit for royalty.',
+      news: [
+        { 
+          date: 'April 10, 2026', 
+          title: 'The Venue Finalized', 
+          description: 'We are thrilled to announce that the Gilded Palace will host our special day. The ballroom is currently being prepared with custom floral designs.' 
+        },
+        { 
+          date: 'May 15, 2026', 
+          title: 'Menu Selection', 
+          description: 'A five-course royal banquet has been curated by Chef Alessandro. Featuring local seasonal delicacies and vintage champagne.' 
+        }
+      ],
+      imageStyle: {
+        showBorder: true,
+        borderColor: '#c5a059',
+        paddingX: 20,
+        paddingY: 20
       }
-    ],
-    imageStyle: {
-      showBorder: true,
-      borderColor: '#c5a059',
-      paddingX: 20,
-      paddingY: 20
-    }
+    };
   });
 
   const isPremiumTheme = ['royal_wedding', 'modern_minimal', 'vintage_garden', 'royal_birthday', 'neon_birthday'].includes(formData.themeId);
@@ -171,15 +174,17 @@ export default function InvitationBuilder({ onBack }: { onBack?: () => void }) {
               {/* Theme Settings */}
               <div className="space-y-3">
                 <label className="text-xs text-[#94a3b8] uppercase font-bold tracking-wider">Effects & Theme</label>
-                <div className="grid grid-cols-1 gap-2">
-                  {THEMES.map(theme => (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {THEMES.filter(t => t.categories.includes(formData.eventType)).map(theme => (
                     <button
-                      key={theme.id} type="button"
+                      key={theme.id}
+                      type="button"
                       onClick={() => setFormData(p => ({ ...p, themeId: theme.id }))}
-                      className={`p-4 rounded-lg border text-left flex items-center justify-between transition-all ${formData.themeId === theme.id ? 'border-[#4db8ff] bg-[#4db8ff]/10 shadow-[0_0_15px_rgba(77,184,255,0.15)]' : 'border-[#1a1d2e] bg-[#0a0b10] hover:border-[#4db8ff]/50'}`}
+                      className={`p-3 rounded-lg border text-left transition-all ${formData.themeId === theme.id ? 'bg-[#4db8ff]/10 border-[#4db8ff] ring-1 ring-[#4db8ff]' : 'bg-[#13151f] border-[#1a1d2e] hover:border-white/10'}`}
                     >
-                      <span className={`text-sm ${formData.themeId === theme.id ? 'text-[#4db8ff]' : 'text-[#f8fafc]'}`}>{theme.label}</span>
-                      {formData.themeId === theme.id && <Check className="w-4 h-4 text-[#4db8ff]" />}
+                      <span className={`text-[10px] font-bold uppercase tracking-wider ${formData.themeId === theme.id ? 'text-[#4db8ff]' : 'text-[#94a3b8]'}`}>
+                        {theme.label}
+                      </span>
                     </button>
                   ))}
                 </div>
