@@ -90,8 +90,5 @@ export function TemplateFooter({ themeId, type, themeLabel }: TemplateFooterProp
         </div>
       </div>
     </footer>
-        </div>
-      </div>
-    </footer>
   );
 }
