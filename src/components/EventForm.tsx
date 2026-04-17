@@ -1,11 +1,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Plus, Trash2, Calendar, Clock, Copy, Check, ChevronDown, ChevronUp, Sparkles, Image as ImageIcon } from 'lucide-react';
+import { Plus, Trash2, Calendar, Clock, Copy, Check, ChevronDown, ChevronUp, Sparkles, Image as ImageIcon, ArrowRight } from 'lucide-react';
 import { encodeConfig } from '../lib/utils';
 import { addDays, format, isAfter, isBefore } from 'date-fns';
 import { EventConfig, TextStyle, BoxStyle } from '../lib/types';
 import CountdownView from './CountdownView';
+import CheckoutModal from './CheckoutModal';
 
 const FONTS = [
   { label: 'Playfair Display (Royal)', value: 'var(--font-playfair)' },
@@ -210,6 +211,7 @@ export default function EventForm({ onBack }: { onBack?: () => void }) {
 
   const [error, setError] = useState('');
   const [activeAccordion, setActiveAccordion] = useState<string | null>(null);
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
 
   // Common styles to update all at once
   const [commonStyle, setCommonStyle] = useState<TextStyle>({
@@ -306,8 +308,12 @@ export default function EventForm({ onBack }: { onBack?: () => void }) {
       return;
     }
 
-    const configString = encodeConfig(formData);
-    const url = `${window.location.origin}${window.location.pathname}?data=${configString}`;
+    setIsCheckoutOpen(true);
+  };
+
+  const handleCheckoutSuccess = (websiteId: string) => {
+    setIsCheckoutOpen(false);
+    const url = `${window.location.origin}/?id=${websiteId}`;
     setGeneratedUrl(url);
   };
 
@@ -607,8 +613,12 @@ export default function EventForm({ onBack }: { onBack?: () => void }) {
               )}
 
               <div className="fixed bottom-0 left-0 w-full lg:w-[45%] p-4 bg-gradient-to-t from-[#0a0b10] via-[#0a0b10] to-transparent z-40">
-                <button type="submit" className="w-full py-4 bg-gradient-to-r from-[#d4af37] to-[#ffd700] text-[#0a0b10] text-sm font-bold uppercase tracking-widest rounded-lg shadow-xl hover:-translate-y-1 transition-transform transform active:scale-95">
-                  Create Royal Countdown
+                <button 
+                  type="submit" 
+                  className="w-full pointer-events-auto px-6 py-4 bg-[#4db8ff] hover:bg-[#66c2ff] text-[#05050a] text-sm tracking-widest uppercase font-bold rounded-lg shadow-[0_0_30px_rgba(77,184,255,0.2)] transition-all flex justify-center items-center gap-2 transform hover:-translate-y-1 active:scale-95"
+                >
+                  Create Website
+                  <ArrowRight className="w-4 h-4 ml-2" />
                 </button>
               </div>
             </form>
@@ -626,6 +636,16 @@ export default function EventForm({ onBack }: { onBack?: () => void }) {
           <CountdownView config={formData} />
         </div>
       )}
+      <CheckoutModal 
+        isOpen={isCheckoutOpen}
+        onClose={() => setIsCheckoutOpen(false)}
+        amount={250}
+        itemName={`Premium Event Countdown`}
+        configData={formData}
+        builderType="countdown"
+        themeId={formData.style?.theme || 'classic'}
+        onSuccess={handleCheckoutSuccess}
+      />
     </div>
   );
 }

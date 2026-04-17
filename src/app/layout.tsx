@@ -17,6 +17,8 @@ export const metadata: Metadata = {
   description: 'Create and share elegant, royal-themed countdowns for your special events.',
 };
 
+import { AuthProvider } from '../contexts/AuthContext';
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -27,7 +29,9 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${playfair.variable} antialiased min-h-screen bg-[#0a0b10] text-[#f8fafc]`}
       >
-        {children}
+        <AuthProvider>
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );

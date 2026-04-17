@@ -6,6 +6,7 @@ import { encodeConfig, transformGDriveLink } from '../lib/utils';
 import { format, addDays } from 'date-fns';
 import InvitationView from './InvitationView';
 import type { InvitationConfig } from '../lib/types';
+import CheckoutModal from './CheckoutModal';
 
 const THEMES = [
   { id: 'royal_wedding', label: 'Royal Wedding (Elegant & Traditional)', categories: ['marriage'] },
@@ -22,6 +23,7 @@ export default function InvitationBuilder({ onBack, initialThemeId }: { onBack?:
   const [step, setStep] = useState<1 | 2>(1);
   const [copied, setCopied] = useState(false);
   const [generatedUrl, setGeneratedUrl] = useState('');
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
 
   const today = new Date();
   const defaultDateStr = format(addDays(today, 30), "yyyy-MM-dd'T'18:00");
@@ -67,8 +69,12 @@ export default function InvitationBuilder({ onBack, initialThemeId }: { onBack?:
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const configString = encodeConfig(formData);
-    const url = `${window.location.origin}${window.location.pathname}?data=${configString}`;
+    setIsCheckoutOpen(true);
+  };
+
+  const handleCheckoutSuccess = (websiteId: string) => {
+    setIsCheckoutOpen(false);
+    const url = `${window.location.origin}/?id=${websiteId}`;
     setGeneratedUrl(url);
   };
 
@@ -369,8 +375,13 @@ export default function InvitationBuilder({ onBack, initialThemeId }: { onBack?:
               </div>
 
               <div className="fixed bottom-0 left-0 w-full lg:w-[45%] p-4 bg-gradient-to-t from-[#05050a] via-[#05050a] to-transparent z-10 pointer-events-none">
-                <button type="submit" className="w-full pointer-events-auto px-6 py-4 bg-[#4db8ff] hover:bg-[#66c2ff] text-[#05050a] text-sm tracking-widest uppercase font-bold rounded-lg shadow-[0_0_30px_rgba(77,184,255,0.2)] transition-all transform hover:-translate-y-1 active:scale-95">
-                  Generate Endpoint
+                <button
+                  type="button"
+                  onClick={() => setIsCheckoutOpen(true)}
+                  className="flex items-center justify-center gap-2 w-full pointer-events-auto px-8 py-4 bg-[#4db8ff] hover:bg-[#3ba0e6] text-[#0a0b10] rounded-xl font-bold uppercase tracking-widest transition-all shadow-[0_0_20px_rgba(77,184,255,0.3)] hover:shadow-[0_0_30px_rgba(77,184,255,0.5)] transform hover:-translate-y-1"
+                >
+                  <Sparkles className="w-5 h-5" />
+                  Create Website
                 </button>
               </div>
 
@@ -390,6 +401,16 @@ export default function InvitationBuilder({ onBack, initialThemeId }: { onBack?:
           <InvitationView config={formData} />
         </div>
       )}
+      <CheckoutModal 
+        isOpen={isCheckoutOpen}
+        onClose={() => setIsCheckoutOpen(false)}
+        amount={formData.eventType === 'marriage' ? 350 : 250}
+        itemName={`Premium ${formData.eventType === 'marriage' ? 'Wedding' : 'Birthday'} Invitation`}
+        configData={formData}
+        builderType="invitation"
+        themeId={formData.themeId}
+        onSuccess={handleCheckoutSuccess}
+      />
     </div>
   );
 }
