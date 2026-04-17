@@ -143,6 +143,10 @@ export default function PremiumCountdown({ config }: { config: EventConfig }) {
             <div className="w-20 h-px bg-black" />
             <p className="text-xs tracking-[0.4em] font-black uppercase italic">Legacy in Progress</p>
          </div>
+         <div className="relative z-10 mt-20 text-[10px] text-black/40 flex flex-col items-center space-y-2 uppercase tracking-[0.2em]">
+            <p>Made with love for our dear family and friends.</p>
+            <p className="font-bold">for business enquiries and custom websites: tytonyxindia@gmail.com</p>
+         </div>
       </section>
 
       <TemplateFooter 

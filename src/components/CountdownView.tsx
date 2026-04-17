@@ -174,6 +174,10 @@ export default function CountdownView({ config }: { config: EventConfig }) {
           >
             {userInfo.name}
           </p>
+          <div className="mt-20 text-[10px] opacity-40 flex flex-col items-center space-y-2 uppercase tracking-[0.2em]" style={{ color: textStyles?.hostLabel?.color }}>
+             <p>Made with love for our dear family and friends.</p>
+             <p className="font-bold">for business enquiries and custom websites: tytonyxindia@gmail.com</p>
+          </div>
         </div>
 
       </motion.div>

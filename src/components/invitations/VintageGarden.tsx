@@ -178,6 +178,10 @@ export default function VintageGarden({ config }: { config: InvitationConfig }) 
             <div className="w-16 h-px bg-[#c19a6b]/40 mx-auto" />
             <p className="text-xs font-sans tracking-[0.6em] uppercase text-[#c19a6b]">forever starts here</p>
             <p className="text-sm font-sans italic opacity-40">Copyright © {config.date ? format(new Date(config.date), "yyyy") : '2026'} • Beautifully Crafted</p>
+            <div className="mt-8 text-[10px] opacity-40 flex flex-col space-y-2">
+              <p>Made with love for our dear family and friends.</p>
+              <p className="tracking-[0.1em] uppercase">for business enquiries and custom websites: tytonyxindia@gmail.com</p>
+            </div>
         </div>
       </footer>
     </div>

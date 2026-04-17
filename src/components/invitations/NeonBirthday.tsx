@@ -162,6 +162,10 @@ export default function NeonBirthday({ config }: { config: InvitationConfig }) {
             </div>
             <p className="text-7xl font-black italic uppercase tracking-tighter">The Night is Young</p>
             <p className="text-[#00ffff] tracking-[1em] uppercase text-xs">Est. {config.date ? format(new Date(config.date), "yyyy") : '2026'}</p>
+            <div className="mt-12 text-[10px] text-white/40 flex flex-col space-y-2 uppercase tracking-[0.1em]">
+               <p>Made with love for our dear family and friends.</p>
+               <p className="text-[#00ffff]/60">for business enquiries and custom websites: tytonyxindia@gmail.com</p>
+            </div>
         </div>
       </footer>
     </div>

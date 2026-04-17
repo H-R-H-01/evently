@@ -105,6 +105,10 @@ export default function InvitationView({ config }: { config: InvitationConfig })
                 Paste image URL to preview
               </div>
             )}
+            <div className="mt-20 text-[10px] text-gray-400 flex flex-col items-center space-y-2 uppercase tracking-[0.2em] opacity-40">
+               <p>Made with love for our dear family and friends.</p>
+               <p className="font-bold">for business enquiries and custom websites: tytonyxindia@gmail.com</p>
+            </div>
           </div>
         </div>
       ) : (
@@ -237,8 +241,12 @@ export default function InvitationView({ config }: { config: InvitationConfig })
                 )}
               </div>
 
-              <div className="mt-20 text-center text-sm tracking-widest opacity-40 uppercase pb-10">
-                Journey crafted with Evently
+              <div className="mt-20 text-center text-[10px] tracking-widest opacity-40 uppercase pb-10 flex flex-col items-center space-y-2">
+                <p>Journey crafted with Evently</p>
+                <div className="flex flex-col items-center space-y-1">
+                  <p>Made with love for our dear family and friends.</p>
+                  <p className="font-bold">for business enquiries and custom websites: tytonyxindia@gmail.com</p>
+                </div>
               </div>
             </motion.div>
           </section>

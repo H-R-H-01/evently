@@ -83,8 +83,8 @@ export function TemplateFooter({ themeId, type, themeLabel }: TemplateFooterProp
             <div className={`text-[10px] tracking-widest uppercase font-medium ${isDark ? 'text-gray-600' : 'text-gray-400'}`}>
               &copy; 2026 Evently. All Rights Reserved.
             </div>
-            <div className={`text-[9px] tracking-[0.2em] uppercase font-bold transition-colors ${isDark ? 'text-[#4db8ff]/60 hover:text-[#4db8ff]' : 'text-blue-500/60 hover:text-blue-500'}`}>
-              for business enquiries and custom websites: tytonyxindia@gmail.com
+            <div className={`text-[9px] tracking-[0.2em] uppercase font-bold transition-colors ${isDark ? 'text-[#c5a059]/60 hover:text-[#c5a059]' : 'text-[#926f34]/60 hover:text-[#926f34]'}`}>
+              tytonyxindia@gmail.com
             </div>
           </div>
         </div>

@@ -192,6 +192,7 @@ export default function RoyalWedding({ config }: { config: InvitationConfig }) {
           <div className="text-sm text-[#fdfcf6]/40 flex flex-col space-y-2">
             <p>Copyright © {config.date ? format(new Date(config.date), "yyyy") : '2026'} {config.primaryName} & {config.secondaryName} Wedding. All Rights Reserved.</p>
             <p>Made with love for our dear family and friends.</p>
+            <p className="mt-4 text-[10px] tracking-[0.1em] uppercase opacity-60">for business enquiries and custom websites: tytonyxindia@gmail.com</p>
           </div>
         </div>
       </footer>

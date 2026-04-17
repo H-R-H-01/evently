@@ -151,6 +151,10 @@ export default function RoyalBirthday({ config }: { config: InvitationConfig }) 
         <h2 className="text-4xl font-playfair mb-2">{config.primaryName}</h2>
         <p className="text-gray-400 lowercase tracking-[0.2em] mb-12">Party of the year</p>
         <p className="text-xs text-gray-300 uppercase tracking-widest">Est. {config.date ? format(new Date(config.date), "yyyy") : '2026'}</p>
+        <div className="mt-12 text-[10px] text-gray-400 flex flex-col space-y-2 opacity-50">
+          <p>Made with love for our dear family and friends.</p>
+          <p className="tracking-[0.1em] uppercase">for business enquiries and custom websites: tytonyxindia@gmail.com</p>
+        </div>
       </footer>
     </div>
   );

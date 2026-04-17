@@ -180,6 +180,10 @@ export default function ModernMinimal({ config }: { config: InvitationConfig }) 
              {config.primaryName} <span className="text-gray-300">&</span> {config.secondaryName}
            </p>
            <p className="text-xs text-gray-400 tracking-[0.4em] uppercase">Est. {config.date ? format(new Date(config.date), "yyyy") : '2026'}</p>
+           <div className="mt-12 text-[10px] text-gray-400 flex flex-col space-y-2 opacity-50">
+             <p>Made with love for our dear family and friends.</p>
+             <p className="tracking-[0.1em] uppercase">for business enquiries and custom websites: tytonyxindia@gmail.com</p>
+           </div>
         </div>
       </footer>
     </div>
