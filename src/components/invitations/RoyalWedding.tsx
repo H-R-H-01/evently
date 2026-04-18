@@ -63,26 +63,29 @@ export default function RoyalWedding({ config }: { config: InvitationConfig }) {
             viewport={{ once: true }}
             className="relative"
           >
-            <div className="absolute -inset-4 border border-[#c5a059]/20 translate-x-4 translate-y-4" />
+            <div className="absolute -inset-2 border-2 border-[#c5a059]/30" />
+            <div className="absolute -inset-5 border border-[#c5a059]/10" />
             
-            <div className="relative z-10 bg-white shadow-[0_10px_30px_-10px_rgba(197,160,89,0.2)] p-4 md:p-8 flex justify-center items-center min-h-[400px] w-full">
+            <div className="relative z-10 bg-white shadow-[0_10px_30px_-10px_rgba(197,160,89,0.2)] flex justify-center items-center">
                 {config.imageUrl ? (
                     <div 
-                        className="inline-block relative h-fit w-fit"
+                        className="w-full h-full flex justify-center items-center overflow-hidden"
                         style={{ 
-                            padding: `${config.imageStyle?.paddingY ?? 0}px ${config.imageStyle?.paddingX ?? 0}px`,
-                            border: config.imageStyle?.showBorder ? `1px solid ${config.imageStyle.borderColor}` : 'none'
+                            padding: `${config.imageStyle?.paddingY ?? 0}px ${config.imageStyle?.paddingX ?? 0}px`
                         }}
                     >
                         <img 
                             src={transformGDriveLink(config.imageUrl)} 
                             alt="Invitation" 
-                            className="max-w-full h-auto block shadow-sm"
+                            className="max-w-full max-h-full w-auto h-auto block object-contain mx-auto"
+                            style={{ 
+                                border: config.imageStyle?.showBorder ? `1px solid ${config.imageStyle.borderColor}` : 'none'
+                             }}
                             onError={(e) => { (e.target as HTMLImageElement).src = 'https://via.placeholder.com/800x1200?text=Invitation'; }}
                         />
                     </div>
                 ) : (
-                    <div className="h-96 flex items-center justify-center bg-gray-50 text-gray-400 w-full">
+                    <div className="h-96 flex items-center justify-center bg-gray-50 text-gray-400">
                         Space for Invitation Card
                     </div>
                 )}

@@ -100,19 +100,24 @@ export default function VintageGarden({ config }: { config: InvitationConfig }) 
       <section className="py-24 px-6 bg-[#efe9e3]">
         <div className="max-w-5xl mx-auto">
              <div className="relative group">
-                <div className="relative z-10 bg-white p-4 shadow-2xl flex justify-center items-center min-h-[300px]">
+                <div className="absolute -inset-4 border border-[#c19a6b]/20 rotate-1 group-hover:rotate-0 transition-transform duration-700" />
+                <div className="absolute -inset-2 border border-[#c19a6b]/10 -rotate-1 group-hover:rotate-0 transition-transform duration-700 delay-75" />
+                
+                <div className="relative z-10 bg-white p-4 shadow-2xl flex justify-center items-center">
                     {config.imageUrl ? (
                         <div 
-                            className="inline-block relative h-fit w-fit"
+                            className="bg-white flex justify-center items-center w-full h-full overflow-hidden"
                             style={{ 
-                                padding: `${config.imageStyle?.paddingY || 0}px ${config.imageStyle?.paddingX || 0}px`,
-                                border: config.imageStyle?.showBorder ? `1px solid ${config.imageStyle.borderColor}` : 'none'
+                                padding: `${config.imageStyle?.paddingY || 0}px ${config.imageStyle?.paddingX || 0}px`
                             }}
                         >
                             <img 
                                 src={transformGDriveLink(config.imageUrl)} 
                                 alt="Vintage Invitation" 
                                 className="max-w-full max-h-[80vh] w-auto h-auto object-contain sepia-[5%] mx-auto"
+                                style={{ 
+                                    border: config.imageStyle?.showBorder ? `1px solid ${config.imageStyle.borderColor}` : 'none'
+                                }}
                                 onError={(e) => { (e.target as HTMLImageElement).src = 'https://via.placeholder.com/800x1200?text=Vintage+Invite'; }}
                             />
                         </div>
