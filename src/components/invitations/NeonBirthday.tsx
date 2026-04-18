@@ -49,9 +49,9 @@ export default function NeonBirthday({ config }: { config: InvitationConfig }) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 1 }}
           >
-            <h1 className="text-7xl md:text-9xl font-black uppercase tracking-tighter italic mb-4">
-               {config.primaryName}<span className="text-[#ff00ff]">'</span>S <br/>
-               <span className="text-transparent border-b-8 border-white pb-2" style={{ WebkitTextStroke: '2px white' }}>Bash</span>
+            <h1 className="text-6xl md:text-9xl font-black uppercase tracking-tighter italic mb-4 px-4 break-words">
+               {config.primaryName}<span className="text-[#ff00ff]">'</span>S <br className="hidden md:block"/>
+               <span className="text-transparent border-b-8 border-white pb-2 block md:inline-block mt-4 md:mt-0" style={{ WebkitTextStroke: '2px white' }}>Bash</span>
             </h1>
             
             <div className="flex flex-wrap justify-center gap-12 mt-16 text-xl tracking-[0.4em] font-light">

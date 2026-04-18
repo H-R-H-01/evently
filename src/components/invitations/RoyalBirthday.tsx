@@ -32,12 +32,12 @@ export default function RoyalBirthday({ config }: { config: InvitationConfig }) 
             <div className="inline-block p-4 rounded-full bg-white/10 backdrop-blur-md border border-white/20 mb-8">
                <Cake className="w-10 h-10 text-yellow-400" />
             </div>
-            <p className="tracking-[0.4em] uppercase text-sm mb-6 drop-shadow-sm font-bold">A Grand Celebration of</p>
-            <h1 className="font-playfair text-6xl md:text-9xl mb-8 leading-tight drop-shadow-lg text-white">
+            <p className="tracking-[0.4em] uppercase text-sm mb-6 drop-shadow-sm font-bold px-4">A Grand Celebration of</p>
+            <h1 className="font-playfair text-5xl md:text-9xl mb-8 leading-tight drop-shadow-lg text-white px-4 break-words">
               {config.primaryName}
             </h1>
             <div className="w-24 h-px bg-yellow-400 mx-auto mb-8" />
-            <p className="font-playfair italic text-2xl md:text-3xl tracking-wide drop-shadow-md">
+            <p className="font-playfair italic text-xl md:text-3xl tracking-wide drop-shadow-md px-4">
               Turning another year of magic
             </p>
           </motion.div>

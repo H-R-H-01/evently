@@ -47,7 +47,7 @@ export default function PremiumCountdown({ config }: { config: EventConfig }) {
                transition={{ duration: 1 }}
             >
                <h3 className="text-yellow-400 uppercase tracking-[0.5em] text-xs font-bold mb-4 drop-shadow-sm">The Journey Begins In</h3>
-               <h1 className="text-6xl md:text-9xl font-black uppercase tracking-tighter mb-12 drop-shadow-2xl">
+               <h1 className="text-5xl md:text-9xl font-black uppercase tracking-tighter mb-12 drop-shadow-2xl px-4 break-words">
                   {config.eventName}
                </h1>
 

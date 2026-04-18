@@ -34,10 +34,10 @@ export default function ModernMinimal({ config }: { config: InvitationConfig }) 
             transition={{ duration: 1.2, ease: "easeOut" }}
           >
             <p className="text-gray-500 tracking-[0.5em] uppercase text-xs mb-8">Saving the date for</p>
-            <h1 className="text-6xl md:text-8xl font-light tracking-tighter mb-4">
-              {config.primaryName} <br className="hidden md:block" />
-              <span className="text-gray-400 italic font-serif">&</span> <br className="hidden md:block" />
-              {config.secondaryName}
+            <h1 className="text-5xl md:text-8xl font-light tracking-tighter mb-4 flex flex-col md:flex-row items-center justify-center gap-4">
+              <span>{config.primaryName}</span>
+              <span className="text-gray-400 italic font-serif text-3xl md:text-6xl">&</span>
+              <span>{config.secondaryName}</span>
             </h1>
             <div className="h-px w-32 bg-black mx-auto my-12 opacity-20" />
             <p className="text-xl md:text-2xl font-light text-gray-700 uppercase tracking-widest">
@@ -114,15 +114,25 @@ export default function ModernMinimal({ config }: { config: InvitationConfig }) 
             whileInView={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1 }}
             viewport={{ once: true }}
-            className="relative h-[600px] grayscale transition-all duration-700 hover:grayscale-0"
+            className="relative flex justify-center items-center"
           >
             {config.imageUrl ? (
-              <img 
-                src={transformGDriveLink(config.imageUrl)} 
-                alt="Modern Wedding" 
-                className="w-full h-full object-cover rounded-sm shadow-2xl"
-                onError={(e) => { (e.target as HTMLImageElement).src = 'https://via.placeholder.com/800x1200?text=Minimal+Invitation'; }}
-              />
+              <div 
+                className="w-full h-full flex justify-center items-center bg-gray-50 overflow-hidden"
+                style={{ 
+                    padding: `${config.imageStyle?.paddingY || 0}px ${config.imageStyle?.paddingX || 0}px`
+                }}
+              >
+                <img 
+                    src={transformGDriveLink(config.imageUrl)} 
+                    alt="Modern Wedding" 
+                    className="max-w-full max-h-full w-auto h-auto object-contain shadow-2xl transition-all duration-700 grayscale hover:grayscale-0 mx-auto"
+                    style={{ 
+                        border: config.imageStyle?.showBorder ? `1px solid ${config.imageStyle.borderColor}` : 'none'
+                    }}
+                    onError={(e) => { (e.target as HTMLImageElement).src = 'https://via.placeholder.com/800x1200?text=Minimal+Invitation'; }}
+                />
+              </div>
             ) : (
               <div className="w-full h-full bg-gray-100 flex items-center justify-center text-gray-300 font-light italic">
                 A Moment Frozen in Time

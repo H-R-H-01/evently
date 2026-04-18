@@ -86,11 +86,11 @@ export default function CountdownView({ config }: { config: EventConfig }) {
             Join us for
           </p>
           <h1 
-            className="mb-6 tracking-wide drop-shadow-2xl" 
+            className="mb-6 tracking-wide drop-shadow-2xl px-4 break-words" 
             style={{ 
               color: textStyles?.title?.color, 
               fontFamily: textStyles?.title?.fontFamily,
-              fontSize: textStyles?.title?.fontSize,
+              fontSize: 'clamp(2.5rem, 8vw, 4rem)', // Responsive font size
               fontStyle: textStyles?.title?.fontStyle,
               textShadow: `0 4px 20px ${textStyles?.title?.color || '#ffd700'}40` 
             }}

@@ -7,6 +7,7 @@ import { format, addDays } from 'date-fns';
 import InvitationView from './InvitationView';
 import type { InvitationConfig } from '../lib/types';
 import CheckoutModal from './CheckoutModal';
+import { FloatingPreview } from './FloatingPreview';
 
 const THEMES = [
   { id: 'royal_wedding', label: 'Royal Wedding (Elegant & Traditional)', categories: ['marriage'] },
@@ -390,16 +391,25 @@ export default function InvitationBuilder({ onBack, initialThemeId }: { onBack?:
         )}
       </div>
 
-      {/* RIGHT COLUMN: Live Preview */}
+      {/* RIGHT COLUMN: Live Preview (Desktop only now, or floating on small screens) */}
       {!generatedUrl && (
-        <div className="w-full lg:flex-1 h-screen overflow-y-auto bg-black relative border-l border-[#1a1d2e] scrollbar-hide">
-          <div className="fixed top-4 right-4 z-50 bg-black/60 border border-[#1a1d2e] px-4 py-1.5 rounded-full text-xs font-mono text-[#4db8ff] backdrop-blur flex items-center gap-2 pointer-events-none">
-            <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-            SCROLL TO PREVIEW
+        <>
+          {/* Desktop static preview */}
+          <div className="hidden lg:block w-full lg:flex-1 h-screen overflow-y-auto bg-black relative border-l border-[#1a1d2e] scrollbar-hide">
+            <div className="fixed top-4 right-4 z-50 bg-black/60 border border-[#1a1d2e] px-4 py-1.5 rounded-full text-xs font-mono text-[#4db8ff] backdrop-blur flex items-center gap-2 pointer-events-none">
+              <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+              SCROLL TO PREVIEW
+            </div>
+            <InvitationView config={formData} />
           </div>
-          {/* Render the View */}
-          <InvitationView config={formData} />
-        </div>
+
+          {/* Floating preview for mobile/tablet */}
+          <div className="lg:hidden">
+            <FloatingPreview>
+              <InvitationView config={formData} />
+            </FloatingPreview>
+          </div>
+        </>
       )}
       <CheckoutModal 
         isOpen={isCheckoutOpen}

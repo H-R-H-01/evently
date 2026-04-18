@@ -83,20 +83,33 @@ export default function InvitationView({ config }: { config: InvitationConfig })
         <div className="flex flex-col items-center p-8 md:p-20 relative">
           <div className="max-w-2xl w-full text-center space-y-8">
             <h1 className="text-4xl md:text-6xl font-playfair">{config.title || 'Invitation'}</h1>
-            <div className="text-2xl md:text-4xl font-playfair font-bold">
+            <div className="text-2xl md:text-4xl font-playfair font-bold px-4 break-words">
               {config.primaryName}
-              {config.secondaryName && ` & ${config.secondaryName}`}
+              {config.secondaryName && (
+                <div className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4 mt-2">
+                  <span className="text-gray-400 font-normal italic">&</span>
+                  <span>{config.secondaryName}</span>
+                </div>
+              )}
             </div>
-            <div className="flex items-center justify-center gap-2 text-xl italic outline-none">
-              <Calendar className="w-6 h-6" />
+            <div className="flex items-center justify-center gap-2 text-xl italic outline-none px-4">
+              <Calendar className="w-6 h-6 shrink-0" />
               {config.date ? format(new Date(config.date), "PPPP p") : 'Date to be announced'}
             </div>
             {config.imageUrl ? (
-              <div className="pt-10">
+              <div 
+                className="pt-10 w-full flex justify-center items-center"
+                style={{ 
+                    padding: `${config.imageStyle?.paddingY || 0}px ${config.imageStyle?.paddingX || 0}px`
+                }}
+              >
                 <img 
                   src={transformGDriveLink(config.imageUrl)} 
                   alt="Invitation" 
-                  className="w-full rounded-lg shadow-2xl"
+                  className="max-w-full max-h-full w-auto h-auto rounded-lg shadow-2xl mx-auto block"
+                  style={{ 
+                    border: config.imageStyle?.showBorder ? `1px solid ${config.imageStyle.borderColor}` : 'none'
+                  }}
                   onError={(e) => { (e.target as HTMLImageElement).src = 'https://via.placeholder.com/800x1200?text=Your+Invitation'; }}
                 />
               </div>

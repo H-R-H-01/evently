@@ -32,11 +32,13 @@ export default function RoyalWedding({ config }: { config: InvitationConfig }) {
             <span className="text-[#c5a059] font-sans tracking-[0.3em] uppercase text-sm mb-6 block drop-shadow-sm">
               The Wedding Of
             </span>
-            <h1 className="font-playfair text-6xl md:text-8xl lg:text-9xl mb-8 leading-tight drop-shadow-lg">
-              {config.primaryName} <span className="text-[#c5a059]">&</span> {config.secondaryName}
+            <h1 className="font-playfair text-5xl md:text-8xl lg:text-9xl mb-8 leading-tight drop-shadow-lg flex flex-col md:flex-row items-center justify-center gap-2 md:gap-6">
+              <span>{config.primaryName}</span>
+              <span className="text-[#c5a059] text-3xl md:text-6xl lg:text-7xl">&</span>
+              <span>{config.secondaryName}</span>
             </h1>
             <div className="w-24 h-px bg-[#c5a059] mx-auto mb-8" />
-            <p className="font-playfair italic text-xl md:text-2xl tracking-wide drop-shadow-md">
+            <p className="font-playfair italic text-lg md:text-2xl tracking-wide drop-shadow-md px-4">
               {config.date ? format(new Date(config.date), "MMMM do, yyyy") : 'TBD'} • {config.location || 'The Gilded Palace'}
             </p>
           </motion.div>
@@ -63,10 +65,10 @@ export default function RoyalWedding({ config }: { config: InvitationConfig }) {
           >
             <div className="absolute -inset-4 border border-[#c5a059]/20 translate-x-4 translate-y-4" />
             
-            <div className="relative z-10 bg-white shadow-[0_10px_30px_-10px_rgba(197,160,89,0.2)]">
+            <div className="relative z-10 bg-white shadow-[0_10px_30px_-10px_rgba(197,160,89,0.2)] flex justify-center items-center">
                 {config.imageUrl ? (
                     <div 
-                        className="overflow-hidden flex justify-center items-center"
+                        className="w-full h-full flex justify-center items-center overflow-hidden"
                         style={{ 
                             padding: `${config.imageStyle?.paddingY ?? 0}px ${config.imageStyle?.paddingX ?? 0}px`
                         }}
@@ -74,7 +76,7 @@ export default function RoyalWedding({ config }: { config: InvitationConfig }) {
                         <img 
                             src={transformGDriveLink(config.imageUrl)} 
                             alt="Invitation" 
-                            className="w-full h-auto block"
+                            className="max-w-full max-h-full w-auto h-auto block object-contain mx-auto"
                             style={{ 
                                 border: config.imageStyle?.showBorder ? `1px solid ${config.imageStyle.borderColor}` : 'none'
                              }}

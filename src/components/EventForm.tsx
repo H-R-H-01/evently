@@ -7,6 +7,7 @@ import { addDays, format, isAfter, isBefore } from 'date-fns';
 import { EventConfig, TextStyle, BoxStyle } from '../lib/types';
 import CountdownView from './CountdownView';
 import CheckoutModal from './CheckoutModal';
+import { FloatingPreview } from './FloatingPreview';
 
 const FONTS = [
   { label: 'Playfair Display (Royal)', value: 'var(--font-playfair)' },
@@ -628,13 +629,23 @@ export default function EventForm({ onBack }: { onBack?: () => void }) {
 
       {/* RIGHT COLUMN: Live Preview */}
       {!generatedUrl && (
-        <div className="w-full lg:flex-1 h-screen overflow-hidden bg-black relative border-l border-[#1a1d2e] z-10">
-          <div className="absolute top-4 right-4 z-50 bg-black/60 border border-[#1a1d2e] px-4 py-1.5 rounded-full text-xs font-mono text-[#ffd700] backdrop-blur flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-            LIVE PREVIEW
+        <>
+          {/* Desktop static preview */}
+          <div className="hidden lg:block w-full lg:flex-1 h-screen overflow-hidden bg-black relative border-l border-[#1a1d2e] z-10">
+            <div className="absolute top-4 right-4 z-50 bg-black/60 border border-[#1a1d2e] px-4 py-1.5 rounded-full text-xs font-mono text-[#ffd700] backdrop-blur flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+              LIVE PREVIEW
+            </div>
+            <CountdownView config={formData} />
           </div>
-          <CountdownView config={formData} />
-        </div>
+
+          {/* Floating preview for smaller screens */}
+          <div className="lg:hidden">
+            <FloatingPreview>
+              <CountdownView config={formData} />
+            </FloatingPreview>
+          </div>
+        </>
       )}
       <CheckoutModal 
         isOpen={isCheckoutOpen}

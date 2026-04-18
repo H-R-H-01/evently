@@ -37,8 +37,10 @@ export default function VintageGarden({ config }: { config: InvitationConfig }) 
            className="relative z-30 bg-[#f7f3ef]/80 backdrop-blur-sm p-12 md:p-20 text-center max-w-3xl border border-[#c19a6b]/20 shadow-2xl"
         >
           <div className="w-16 h-px bg-[#c19a6b]/40 mx-auto mb-8" />
-          <h1 className="text-5xl md:text-7xl lg:text-8xl font-serif text-[#3d3126] mb-8 leading-tight lowercase italic">
-            {config.primaryName} <br/> <span className="text-2xl not-italic font-sans tracking-[0.5em] text-[#c19a6b] block my-4 lowercase">and</span> {config.secondaryName}
+          <h1 className="text-4xl md:text-7xl lg:text-8xl font-serif text-[#3d3126] mb-8 leading-tight lowercase italic flex flex-col md:flex-row items-center justify-center gap-2 md:gap-6">
+            <span>{config.primaryName}</span>
+            <span className="text-xl not-italic font-sans tracking-[0.3em] text-[#c19a6b] lowercase">and</span>
+            <span>{config.secondaryName}</span>
           </h1>
           <div className="w-16 h-px bg-[#c19a6b]/40 mx-auto mt-8 mb-6" />
           <p className="text-lg md:text-xl tracking-widest uppercase font-sans text-[#c19a6b]">
@@ -48,15 +50,14 @@ export default function VintageGarden({ config }: { config: InvitationConfig }) 
         </motion.div>
       </section>
 
-      {/* Invitation Section */}
-      <section className="py-32 px-6">
+      {/* Main Announcement */}
+      <section className="py-32 px-6 relative bg-white">
         <div className="max-w-4xl mx-auto text-center">
             <motion.div
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                transition={{ duration: 1 }}
-                viewport={{ once: true }}
-                className="space-y-12"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1 }}
+              viewport={{ once: true }}
             >
                 <div className="flex justify-center items-center space-x-4">
                     <div className="h-[1px] w-12 bg-[#c19a6b]/30" />
@@ -64,9 +65,9 @@ export default function VintageGarden({ config }: { config: InvitationConfig }) 
                     <div className="h-[1px] w-12 bg-[#c19a6b]/30" />
                 </div>
                 
-                <h2 className="text-4xl md:text-6xl text-[#3d3126] font-serif italic">Our Secret Promise</h2>
+                <h2 className="text-4xl md:text-6xl text-[#3d3126] font-serif italic mt-12">Our Secret Promise</h2>
                 
-                <div className="max-w-2xl mx-auto">
+                <div className="max-w-2xl mx-auto mt-12">
                     <p className="text-xl md:text-2xl leading-relaxed text-[#5c5044] font-serif italic">
                         "{config.message || 'Like flowers in a hidden glen, our love has bloomed in its own time and season. We invite you to be part of the most special page in our story.'}"
                     </p>
@@ -102,10 +103,10 @@ export default function VintageGarden({ config }: { config: InvitationConfig }) 
                 <div className="absolute -inset-4 border border-[#c19a6b]/20 rotate-1 group-hover:rotate-0 transition-transform duration-700" />
                 <div className="absolute -inset-2 border border-[#c19a6b]/10 -rotate-1 group-hover:rotate-0 transition-transform duration-700 delay-75" />
                 
-                <div className="relative z-10 bg-white p-4 shadow-2xl">
+                <div className="relative z-10 bg-white p-4 shadow-2xl flex justify-center items-center">
                     {config.imageUrl ? (
                         <div 
-                            className="bg-white flex justify-center"
+                            className="bg-white flex justify-center items-center w-full h-full overflow-hidden"
                             style={{ 
                                 padding: `${config.imageStyle?.paddingY || 0}px ${config.imageStyle?.paddingX || 0}px`
                             }}
@@ -113,7 +114,7 @@ export default function VintageGarden({ config }: { config: InvitationConfig }) 
                             <img 
                                 src={transformGDriveLink(config.imageUrl)} 
                                 alt="Vintage Invitation" 
-                                className="w-full max-h-[80vh] object-contain sepia-[5%]"
+                                className="max-w-full max-h-[80vh] w-auto h-auto object-contain sepia-[5%] mx-auto"
                                 style={{ 
                                     border: config.imageStyle?.showBorder ? `1px solid ${config.imageStyle.borderColor}` : 'none'
                                 }}
