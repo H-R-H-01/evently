@@ -114,27 +114,25 @@ export default function ModernMinimal({ config }: { config: InvitationConfig }) 
             whileInView={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1 }}
             viewport={{ once: true }}
-            className="relative flex justify-center items-center"
+            className="relative flex justify-center items-center h-full w-full min-h-[400px] bg-gray-50/50 p-4"
           >
             {config.imageUrl ? (
               <div 
-                className="w-full h-full flex justify-center items-center bg-gray-50 overflow-hidden"
+                className="inline-block relative h-fit w-fit"
                 style={{ 
-                    padding: `${config.imageStyle?.paddingY || 0}px ${config.imageStyle?.paddingX || 0}px`
+                    padding: `${config.imageStyle?.paddingY || 0}px ${config.imageStyle?.paddingX || 0}px`,
+                    border: config.imageStyle?.showBorder ? `1px solid ${config.imageStyle.borderColor}` : 'none'
                 }}
               >
                 <img 
                     src={transformGDriveLink(config.imageUrl)} 
                     alt="Modern Wedding" 
-                    className="max-w-full max-h-full w-auto h-auto object-contain shadow-2xl transition-all duration-700 grayscale hover:grayscale-0 mx-auto"
-                    style={{ 
-                        border: config.imageStyle?.showBorder ? `1px solid ${config.imageStyle.borderColor}` : 'none'
-                    }}
+                    className="max-w-full h-auto object-contain shadow-xl transition-all duration-700 grayscale hover:grayscale-0 mx-auto"
                     onError={(e) => { (e.target as HTMLImageElement).src = 'https://via.placeholder.com/800x1200?text=Minimal+Invitation'; }}
                 />
               </div>
             ) : (
-              <div className="w-full h-full bg-gray-100 flex items-center justify-center text-gray-300 font-light italic">
+              <div className="w-full h-full bg-gray-100 flex items-center justify-center text-gray-300 font-light italic min-h-[400px]">
                 A Moment Frozen in Time
               </div>
             )}

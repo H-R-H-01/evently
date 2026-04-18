@@ -97,21 +97,21 @@ export default function InvitationView({ config }: { config: InvitationConfig })
               {config.date ? format(new Date(config.date), "PPPP p") : 'Date to be announced'}
             </div>
             {config.imageUrl ? (
-              <div 
-                className="pt-10 w-full flex justify-center items-center"
-                style={{ 
-                    padding: `${config.imageStyle?.paddingY || 0}px ${config.imageStyle?.paddingX || 0}px`
-                }}
-              >
-                <img 
-                  src={transformGDriveLink(config.imageUrl)} 
-                  alt="Invitation" 
-                  className="max-w-full max-h-full w-auto h-auto rounded-lg shadow-2xl mx-auto block"
+              <div className="pt-10 w-full flex justify-center items-center">
+                <div 
+                  className="inline-block relative h-fit w-fit"
                   style={{ 
-                    border: config.imageStyle?.showBorder ? `1px solid ${config.imageStyle.borderColor}` : 'none'
+                      padding: `${config.imageStyle?.paddingY || 0}px ${config.imageStyle?.paddingX || 0}px`,
+                      border: config.imageStyle?.showBorder ? `1px solid ${config.imageStyle.borderColor}` : 'none'
                   }}
-                  onError={(e) => { (e.target as HTMLImageElement).src = 'https://via.placeholder.com/800x1200?text=Your+Invitation'; }}
-                />
+                >
+                  <img 
+                    src={transformGDriveLink(config.imageUrl)} 
+                    alt="Invitation" 
+                    className="max-w-full h-auto rounded shadow-2xl mx-auto block"
+                    onError={(e) => { (e.target as HTMLImageElement).src = 'https://via.placeholder.com/800x1200?text=Your+Invitation'; }}
+                  />
+                </div>
               </div>
             ) : (
               <div className="pt-10 h-64 flex items-center justify-center border-2 border-dashed border-gray-300 rounded-lg text-gray-400">
